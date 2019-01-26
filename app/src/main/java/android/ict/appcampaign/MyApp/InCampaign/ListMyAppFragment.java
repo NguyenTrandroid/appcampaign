@@ -136,6 +136,7 @@ public class ListMyAppFragment extends Fragment implements GetKeySearchListener 
                                     appItem.setDevelper(allData.get(CONST.POINTS));
                                     appItem.setDevelper(allData.get(CONST.DEVELOPER));
                                     appItem.setPoint(allData.get(CONST.POINTS));
+                                    appItem.setUrlImage(allData.get(CONST.IMAGE));
 
                                     if (!isExistedFileOnApp(appItem.getPackageName())) {
                                         String fileName = appItem.getPackageName() + ".webp";

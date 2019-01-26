@@ -95,7 +95,14 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
         String fileName = appItem.getPackageName() + ".webp";
         File fileNameOnDevice = new File(Environment.getExternalStoragePublicDirectory
                 (DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-        Glide.with(context).load(fileNameOnDevice).into(viewHolder.ivAvatarApp);
+        if (fileNameOnDevice.exists()) {
+            Glide.with(context).load(fileNameOnDevice).into(viewHolder.ivAvatarApp);
+        }
+        else
+        {
+            Glide.with(context).load(appItem.getUrlImage()).into(viewHolder.ivAvatarApp);
+        }
+
         Log.d("DOCCCC", "test" + appItem.getNameApp());
         viewHolder.cvApp.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -95,6 +95,14 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
         Glide.with(context).load(fileNameOnDevice).into(viewHolder.ivAvatarApp);
         Log.d("DOCCCC","test"+appItem.getNameApp());
 
+        if (fileNameOnDevice.exists()) {
+            Glide.with(context).load(fileNameOnDevice).into(viewHolder.ivAvatarApp);
+        }
+        else
+        {
+            Glide.with(context).load(appItem.getUrlImage()).into(viewHolder.ivAvatarApp);
+        }
+
         viewHolder.cvApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

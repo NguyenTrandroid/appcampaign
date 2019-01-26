@@ -6,6 +6,7 @@ public class CONST {
     public static final String NAME_APP ="tenapp";
     public static final String DEVELOPER ="tennhaphattrien";
     public static final String POINTS ="points";
+    public static final String IMAGE ="linkanh";
     public static final String PLUS ="PLUS";
     public static final String MINUS ="MINUS";
     public static final String ALL_APPP="ALL_APP";
