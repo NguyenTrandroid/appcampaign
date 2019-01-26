@@ -171,18 +171,8 @@ public class ListMyAppFragment extends Fragment implements GetDataSearchListener
         ivAddApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    if (LoginActivity.isConnected()) {
-                        Intent intent =new Intent(getContext(), FindAppActivity.class);
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(getContext(), "No Internet", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Intent intent =new Intent(getContext(), FindAppActivity.class);
+                startActivity(intent);
             }
         });
     }
