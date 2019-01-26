@@ -1,35 +1,20 @@
-package android.ict.appcampaign.MyApp;
+package android.ict.appcampaign.MyApp.OtherApp;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.ict.appcampaign.AppItem;
 import android.ict.appcampaign.CONST;
-import android.ict.appcampaign.Dialog.SLoading;
-import android.ict.appcampaign.Login.LoginActivity;
-import android.ict.appcampaign.MainActivity;
 import android.ict.appcampaign.MyApp.AddApp.FindAppActivity;
-import android.ict.appcampaign.Profile.History.HistoryItem;
+import android.ict.appcampaign.MyApp.InCampaign.ListMyAppAdapter;
+import android.ict.appcampaign.MyApp.Interface.GetDataListener;
+import android.ict.appcampaign.MyApp.Interface.GetDataSearchListener;
+import android.ict.appcampaign.MyApp.Interface.GetPointUserListener;
 import android.ict.appcampaign.R;
 import android.ict.appcampaign.utils.DirectoryHelper;
-import android.ict.appcampaign.utils.DownloadFileService;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,93 +22,39 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.facebook.login.LoginManager;
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.wang.avi.AVLoadingIndicatorView;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-@SuppressLint("ValidFragment")
-public class ListMyAppFragment extends Fragment implements GetDataSearchListener {
+public class ListOtherAppFragment extends Fragment implements GetDataSearchListener {
 
     View view;
-    String TYPE;
     ImageView ivAddApp;
     RecyclerView rvListMyApp;
     FirebaseFirestore db;
     List<AppItem> listOtherApps;
-    List<AppItem> listInCampaign;
     StorageReference storageReference;
     GetPointUserListener getPointUserListener;
-    private FirebaseFunctions mFunctions;
     private FirebaseAuth mAuth;
     String pointUser;
     GetDataListener getDataListener;
     AppItem appItem;
     String IDFragment;
-    @SuppressLint("ValidFragment")
-    public ListMyAppFragment(String TYPE) {
-        this.TYPE = TYPE;
-    }
-
-    private Task<String> addPointv2(int points) {
-        // Create the arguments to the callable function.
-        Map<String, Object> data = new HashMap<>();
-        data.put("diemremoveuser", points);
-        return mFunctions
-                .getHttpsCallable("addPointv2")
-                .call(data)
-                .continueWith(new Continuation<HttpsCallableResult, String>() {
-                    @Override
-                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        // This continuation runs on either success or failure, but if the task
-                        // has failed then getResult() will throw an Exception which will be
-                        // propagated down.
-                        String result = (String) task.getResult().getData();
-                        Log.d("teststring", result);
-                        return result;
-                    }
-                });
-    }
 
     @Nullable
     @Override
@@ -135,7 +66,6 @@ public class ListMyAppFragment extends Fragment implements GetDataSearchListener
         mAuth = FirebaseAuth.getInstance();
         getPointUserListener = (GetPointUserListener) getContext();
         getDataListener = (GetDataListener) getContext();
-        mFunctions = FirebaseFunctions.getInstance();
         db = FirebaseFirestore.getInstance();
 
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -159,11 +89,7 @@ public class ListMyAppFragment extends Fragment implements GetDataSearchListener
     private void InitView() {
         ivAddApp = view.findViewById(R.id.iv_addApp);
         rvListMyApp = view.findViewById(R.id.rv_listMyApp);
-        if (TYPE.equals(CONST.OTHER_APP)) {
             ivAddApp.setVisibility(View.VISIBLE);
-        } else {
-            ivAddApp.setVisibility(View.GONE);
-        }
         GetMyApp(mAuth.getUid());
     }
 
@@ -171,7 +97,7 @@ public class ListMyAppFragment extends Fragment implements GetDataSearchListener
         ivAddApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent =new Intent(getContext(), FindAppActivity.class);
+                Intent intent = new Intent(getContext(), FindAppActivity.class);
                 startActivity(intent);
             }
         });
@@ -179,7 +105,7 @@ public class ListMyAppFragment extends Fragment implements GetDataSearchListener
 
     @Override
     public void onPassListSearch(List<AppItem> listSearch) {
-        ListMyAppAdapter myAppAdapter = new ListMyAppAdapter(getContext(), listSearch, pointUser, TYPE);
+        ListMyAppAdapter myAppAdapter = new ListMyAppAdapter(getContext(), listSearch, pointUser);
         rvListMyApp.setAdapter(myAppAdapter);
         myAppAdapter.notifyDataSetChanged();
     }
@@ -198,7 +124,6 @@ public class ListMyAppFragment extends Fragment implements GetDataSearchListener
 
                     if (snapshot != null && snapshot.exists()) {
                         listOtherApps = new ArrayList<>();
-                        listInCampaign = new ArrayList<>();
 //                    Log.d("DATAAA", "Current data: " + snapshot.getData());
                         for (Map.Entry<String, Object> entry : snapshot.getData().entrySet()) {
                             if ("listadd".equals(entry.getKey())) {
@@ -228,11 +153,8 @@ public class ListMyAppFragment extends Fragment implements GetDataSearchListener
 
                                             }
                                         });
-                                        if ("0".equals(appItem.getPoint())) {
+                                        if ("0".equals(appItem.getPoint()))
                                             listOtherApps.add(appItem);
-                                        } else {
-                                            listInCampaign.add(appItem);
-                                        }
                                     }
                                 }
                             }
@@ -243,24 +165,13 @@ public class ListMyAppFragment extends Fragment implements GetDataSearchListener
                                 Log.d("ENTRY", entry.getValue().toString());
                             }
                         }
-//                    Log.d("DATAAA", "packagename: " + listOtherApps.get(0).getPackageName());
-//                    Log.d("DATAAA", "name: " + listOtherApps.get(0).getNameApp());
-//                    Log.d("DATAAA", "type: " + TYPE);
 
-                        getDataListener.GetList(listInCampaign, listOtherApps, IDFragment);
-                        if (TYPE.equals(CONST.OTHER_APP)) {
-                            final ListMyAppAdapter listMyAppAdapter = new ListMyAppAdapter(getContext(), listOtherApps, pointUser, TYPE);
-                            GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
-                            rvListMyApp.setLayoutManager(layoutManager);
-                            rvListMyApp.setItemAnimator(new DefaultItemAnimator());
-                            rvListMyApp.setAdapter(listMyAppAdapter);
-                        } else {
-                            final ListMyAppAdapter listMyAppAdapter = new ListMyAppAdapter(getContext(), listInCampaign, pointUser, TYPE);
-                            GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
-                            rvListMyApp.setLayoutManager(layoutManager);
-                            rvListMyApp.setItemAnimator(new DefaultItemAnimator());
-                            rvListMyApp.setAdapter(listMyAppAdapter);
-                        }
+                        getDataListener.GetList(listOtherApps, IDFragment);
+                        ListOtherApdapter listMyAppAdapter = new ListOtherApdapter(getContext(), listOtherApps, pointUser);
+                        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
+                        rvListMyApp.setLayoutManager(layoutManager);
+                        rvListMyApp.setItemAnimator(new DefaultItemAnimator());
+                        rvListMyApp.setAdapter(listMyAppAdapter);
 
 
                     } else {
@@ -270,8 +181,7 @@ public class ListMyAppFragment extends Fragment implements GetDataSearchListener
 
                 }
                 try {
-
-                    ListMyAppAdapter.sLoading.dismiss();
+                    ListOtherApdapter.sLoading.dismiss();
                 } catch (Exception s) {
 
                 }

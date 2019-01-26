@@ -2,21 +2,15 @@ package android.ict.appcampaign.MyApp;
 
 import android.content.Intent;
 import android.ict.appcampaign.AppItem;
-import android.ict.appcampaign.CONST;
 import android.ict.appcampaign.Login.LoginActivity;
-import android.ict.appcampaign.MainActivity;
-import android.ict.appcampaign.Profile.History.HistoryActivity;
+import android.ict.appcampaign.MyApp.InCampaign.ListMyAppFragment;
+import android.ict.appcampaign.MyApp.Interface.GetDataListener;
+import android.ict.appcampaign.MyApp.Interface.GetDataOtherListener;
+import android.ict.appcampaign.MyApp.Interface.GetDataSearchListener;
+import android.ict.appcampaign.MyApp.Interface.GetPointUserListener;
 import android.ict.appcampaign.R;
-import android.media.Image;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,8 +18,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,14 +30,12 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class MyAppActivity extends AppCompatActivity implements GetPointUserListener, GetDataListener {
+public class MyAppActivity extends AppCompatActivity implements GetPointUserListener, GetDataListener, GetDataOtherListener {
 
     ImageView ivBack;
     ViewPager viewPager;
@@ -174,9 +164,14 @@ public class MyAppActivity extends AppCompatActivity implements GetPointUserList
         finish();
     }
 
+
     @Override
-    public void GetList(List<AppItem> listCampaign, List<AppItem> listOtherApps, final String idFragment) {
-        getlistOtherApps = listOtherApps;
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+    }
+
+    @Override
+    public void GetList(List<AppItem> listCampaign, final String idFragment) {
         getlistCampaign = listCampaign;
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             List<AppItem> listTemp = new ArrayList<>();
@@ -208,7 +203,27 @@ public class MyAppActivity extends AppCompatActivity implements GetPointUserList
                         getDataSearchListener = listMyAppFragment;
                         getDataSearchListener.onPassListSearch(listTemp);
                     }
-                } else {
+                }
+
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public void GetListOther(List<AppItem> listOtherApps, final String idFragment) {
+        getlistOtherApps = listOtherApps;
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            List<AppItem> listTemp = new ArrayList<>();
+
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if (getPositionTab == 1) {
                     listTemp.clear();
                     if (s.length() == 0) {
                         listTemp.addAll(getlistOtherApps);
@@ -229,14 +244,8 @@ public class MyAppActivity extends AppCompatActivity implements GetPointUserList
                         getDataSearchListener.onPassListSearch(listTemp);
                     }
                 }
-
                 return false;
             }
         });
-    }
-
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        super.onAttachFragment(fragment);
     }
 }

@@ -5,10 +5,6 @@ import android.content.SharedPreferences;
 import android.ict.appcampaign.AppItem;
 import android.ict.appcampaign.Dialog.SLoading;
 import android.ict.appcampaign.Login.LoginActivity;
-import android.ict.appcampaign.MainActivity;
-import android.ict.appcampaign.MyApp.GetDataListener;
-import android.ict.appcampaign.MyApp.ListMyAppFragment;
-import android.ict.appcampaign.MyApp.MyAppActivity;
 import android.ict.appcampaign.R;
 import android.ict.appcampaign.utils.AppsManager;
 import android.net.Uri;
@@ -20,7 +16,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
@@ -38,13 +33,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CampaignActivity extends AppCompatActivity implements ListCampaignAdapter.onItemClick, GetData {

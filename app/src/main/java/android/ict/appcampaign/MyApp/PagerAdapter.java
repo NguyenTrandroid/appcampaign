@@ -1,12 +1,10 @@
 package android.ict.appcampaign.MyApp;
 
-import android.content.Context;
-import android.ict.appcampaign.CONST;
+import android.ict.appcampaign.MyApp.InCampaign.ListMyAppFragment;
+import android.ict.appcampaign.MyApp.OtherApp.ListOtherAppFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.transition.Transition;
 
 public class PagerAdapter extends FragmentPagerAdapter {
     private int numOfTabs;
@@ -22,9 +20,9 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int i) {
         switch (i) {
             case 0:
-                return new ListMyAppFragment(CONST.IN_CAMPAIGN);
+                return new ListMyAppFragment();
             case 1:
-                return new ListMyAppFragment(CONST.OTHER_APP);
+                return new ListOtherAppFragment();
             default:
                 return null;
         }

@@ -1,4 +1,4 @@
-package android.ict.appcampaign.MyApp;
+package android.ict.appcampaign.MyApp.Interface;
 
 import android.ict.appcampaign.AppItem;
 
