@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/_230sdp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/custom_background_dialog"
+    android:layout_margin="@dimen/_20sdp"
+    app:cardCornerRadius="@dimen/_10sdp"
+    android:elevation="@dimen/_10sdp">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabOption"
+            android:layout_width="match_parent"
+            app:tabSelectedTextColor="@color/blue"
+            app:tabTextColor="@color/dim"
+            app:tabIndicatorColor="@color/blue"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/plus" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/minus" />
+        </android.support.design.widget.TabLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginTop="@dimen/_10sdp"
+                android:id="@+id/tv_pointOption"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:paddingLeft="@dimen/_10sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0"
+                android:background="@drawable/custom_button_white"/>
+            <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sb_pointOption"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="@dimen/_150sdp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_height="@dimen/_40sdp">
+
+            <Button
+                android:id="@+id/bt_option"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/custom_button_blue"
+                android:fontFamily="@font/avant_garde_bold"
+                android:textColor="#ffffffff" />
+
+            <Button
+                android:id="@+id/bt_cancel"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/custom_button_white"
+                android:fontFamily="@font/avant_garde_bold"
+                android:text="@string/cancel"
+                android:textColor="@color/blue" />
+        </LinearLayout>
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

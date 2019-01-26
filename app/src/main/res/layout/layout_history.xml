@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white">
+
+    <android.support.v7.widget.CardView
+        android:layout_margin="@dimen/_3sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="@dimen/_5sdp">
+        <RelativeLayout
+            android:layout_margin="@dimen/_8sdp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/iv_avatarApp"
+                android:src="@drawable/unnamed"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="@dimen/_50sdp" />
+
+            <RelativeLayout
+                android:id="@+id/rl_infoApp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/iv_avatarApp"
+                android:layout_marginLeft="@dimen/_10sdp">
+                <TextView
+                    android:id="@+id/tv_nameApp"
+                    android:textColor="@color/blue"
+                    android:fontFamily="@font/avant_garde"
+                    android:textSize="@dimen/_14ssp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Birthday Photo Frame"/>
+                <TextView
+                    android:layout_below="@id/tv_nameApp"
+                    android:id="@+id/tv_developerApp"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/dim"
+                    android:fontFamily="@font/avant_garde"
+                    android:textSize="@dimen/_8ssp"
+                    android:layout_height="wrap_content"
+                    android:text="ProToolStudio"/>
+            </RelativeLayout>
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15:03"
+                android:textSize="@dimen/_11ssp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/rl_infoApp"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

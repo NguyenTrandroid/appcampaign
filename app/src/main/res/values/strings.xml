@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">AppCampaign</string>
+    <!--<string name="facebook_app_id">412504279295436</string>-->
+    <string name="facebook_app_id">412504279295436</string>
+    <string name="fb_login_protocol_scheme">fb412504279295436</string>
+    <string name="dangnhap">Sign up with FACEBOOK</string>
+    <string name="chiendich">Campaign</string>
+    <string name="appcuatoi">My Apps</string>
+    <string name="thongtin">Profile</string>
+    <string name="trangchu">HOME</string>
+    <string name="allApp">ALL APPS</string>
+    <string name="myApp">MY APPS</string>
+    <string name="searchHint">Search</string>
+    <string name="CHIENDINH">CAMPAIGN</string>
+    <string name="removeListApp">Clear HISTORY</string>
+    <string name="HISTORY">HISTORY</string>
+    <string name="points">ALL POINT AVAVILABLE</string>
+    <string name="contactAdmin">CONTACT ADMIN</string>
+    <string name="PROFILE">PROFILE</string>
+    <string name="logOut">LOG OUT</string>
+    <string name="inCamp">IN CAMPAIGN</string>
+    <string name="other">OTHER APP</string>
+    <string name="removeThisApp">DO YOU WANT TO REMOVE THIS APP?</string>
+    <string name="remove">REMOVE</string>
+    <string name="cancel">CANCEL</string>
+    <string name="add">ADD</string>
+    <string name="hintAppName">Input Packagename</string>
+    <string name="askLogout">DO YOU WANT TO LOGOUT</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="AccDis">Account disable</string>
+    <string name="plus">PLUS</string>
+    <string name="minus">MINUS</string>
+    <string name="clearHistory">DO YOU WANT TO CLEAR HISTORY? </string>
+
+
+</resources>
+
+

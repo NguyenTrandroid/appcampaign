@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/rela"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white">
+
+    <android.support.v7.widget.CardView
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:layout_marginRight="@dimen/_18sdp"
+        android:layout_marginLeft="@dimen/_18sdp"
+        android:id="@+id/cv_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="@dimen/_5sdp">
+        <RelativeLayout
+            android:layout_margin="@dimen/_8sdp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/iv_avatarApp"
+                android:src="@drawable/unnamed"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="@dimen/_50sdp" />
+
+            <RelativeLayout
+                android:id="@+id/rl_infoApp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/iv_avatarApp"
+                android:layout_marginLeft="@dimen/_10sdp">
+                <TextView
+                    android:id="@+id/tv_nameApp"
+                    android:textColor="@color/blue"
+                    android:fontFamily="@font/avant_garde"
+                    android:textSize="@dimen/_14ssp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Birthday Photo Frame"/>
+                <TextView
+                    android:layout_below="@id/tv_nameApp"
+                    android:id="@+id/tv_developerApp"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/dim"
+                    android:fontFamily="@font/avant_garde"
+                    android:textSize="@dimen/_8ssp"
+                    android:layout_height="wrap_content"
+                    android:text="ProToolStudio"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/iv_avatarApp"
+                android:layout_below="@id/rl_infoApp"
+                android:layout_marginLeft="@dimen/_5sdp">
+                <ImageView
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:id="@+id/iv_thunder"
+                    android:layout_width="@dimen/_15sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:src="@drawable/ic_thunder_blue"/>
+
+                <TextView
+                    android:id="@+id/tv_pointApp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_3sdp"
+                    android:layout_toRightOf="@id/iv_thunder"
+                    android:fontFamily="@font/nahia"
+                    android:text="_ _"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/_20ssp" />
+            </RelativeLayout>
+            <ImageView
+                android:id="@+id/iv_down"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:layout_below="@id/rl_infoApp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_alignParentRight="true"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_download"
+                android:visibility="visible"/>
+            <ImageView
+                android:id="@+id/iv_remove"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:layout_below="@id/rl_infoApp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_alignParentRight="true"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_close"
+                android:visibility="invisible"/>
+
+            <ImageView
+                android:id="@+id/iv_edit"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_below="@id/rl_infoApp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_toLeftOf="@id/iv_remove"
+                android:src="@drawable/ic_info"
+                android:visibility="invisible" />
+            <ImageView
+                android:id="@+id/iv_campaign"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:layout_below="@id/rl_infoApp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_alignParentRight="true"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:src="@drawable/ic_campaign"
+                android:visibility="invisible"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

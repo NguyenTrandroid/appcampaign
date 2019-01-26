@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AppCampaign</string>
+    <string name="dangnhap">Đăng nhập qua FACEBOOK</string>
+    <string name="chiendich">Chiến dịch</string>
+    <string name="appcuatoi">Apps của tôi</string>
+    <string name="thongtin">Thông tin cá nhân</string>
+    <string name="trangchu">TRANG CHỦ</string>
+    <string name="allApp">TẤT CẢ APP</string>
+    <string name="myApp">APP CỦA TÔI</string>
+    <string name="searchHint">Tìm kiếm</string>
+    <string name="CHIENDINH">CHIẾN DỊCH</string>
+    <string name="removeListApp">Xóa LỊCH SỬ</string>
+    <string name="HISTORY">LỊCH SỬ TẢI</string>
+    <string name="points">TỔNG ĐIỂM HIỆN CÓ</string>
+    <string name="contactAdmin">LIÊN HỆ ADMIN</string>
+    <string name="PROFILE">THÔNG TIN CÁ NHÂN</string>
+    <string name="logOut">ĐĂNG XUẤT</string>
+    <string name="inCamp">CHIẾN DỊCH</string>
+    <string name="other">KHÁC</string>
+    <string name="remove">CÓ</string>
+    <string name="cancel">HỦY</string>
+    <string name="removeThisApp">GỠ BỎ ỨNG DỤNG RA KHỎI CHIẾN DỊCH?</string>
+    <string name="add">THÊM</string>
+    <string name="askLogout">ĐĂNG XUẤT KHỎI HỆ THỐNG?</string>
+    <string name="yes">ĐỒNG Ý</string>
+    <string name="no">HỦY</string>
+    <string name="hintAppName">Nhập tên App</string>
+    <string name="AccDis">Tài khoản bị khóa</string>
+    <string name="plus">CỘNG</string>
+    <string name="minus">TRỪ</string>
+    <string name="clearHistory">XÓA LỊCH SỬ TẢI? </string>
+</resources>

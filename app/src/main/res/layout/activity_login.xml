@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Login.LoginActivity">
+
+    <RelativeLayout
+        android:id="@+id/rl_splash_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/custom_background">
+
+        <ImageView
+            android:id="@+id/iv_splash_screen"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_160sdp"
+            android:layout_width="@dimen/_170sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_text"
+            android:visibility="invisible"/>
+
+        <com.wang.avi.AVLoadingIndicatorView xmlns:app="http://schemas.android.com/apk/res-auto"
+            style="@style/AVLoadingIndicatorView"
+            android:id="@+id/av_Loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/_30sdp"
+            android:visibility="visible"
+            app:indicatorColor="@color/color_avLoading"
+            app:indicatorName="BallPulseIndicator" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_login"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible">
+
+        <ImageView
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_160sdp"
+            android:layout_width="@dimen/_170sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_text_blue"
+            android:visibility="visible"/>
+        <FrameLayout
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_100sdp">
+            <com.facebook.login.widget.LoginButton
+                android:visibility="gone"
+                android:id="@+id/bt_login"
+                android:layout_marginTop="@dimen/_100sdp"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content" />
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_login"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_35sdp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="@dimen/_25sdp"
+                android:layout_marginRight="@dimen/_25sdp"
+                app:cardBackgroundColor="@color/blue"
+                app:cardCornerRadius="@dimen/_8sdp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/avant_garde"
+                    android:gravity="center"
+                    android:text="@string/dangnhap"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_15sdp" />
+            </android.support.v7.widget.CardView>
+
+
+        </FrameLayout>
+
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
