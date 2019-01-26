@@ -2,12 +2,14 @@ package android.ict.appcampaign.MyApp;
 
 import android.content.Intent;
 import android.ict.appcampaign.AppItem;
+import android.ict.appcampaign.CONST;
 import android.ict.appcampaign.Login.LoginActivity;
+import android.ict.appcampaign.MainActivity;
 import android.ict.appcampaign.MyApp.InCampaign.ListMyAppFragment;
-import android.ict.appcampaign.MyApp.Interface.GetDataListener;
-import android.ict.appcampaign.MyApp.Interface.GetDataOtherListener;
-import android.ict.appcampaign.MyApp.Interface.GetDataSearchListener;
+import android.ict.appcampaign.MyApp.Interface.GetKeySearchListener;
 import android.ict.appcampaign.MyApp.Interface.GetPointUserListener;
+import android.ict.appcampaign.MyApp.OtherApp.ListOtherApdapter;
+import android.ict.appcampaign.MyApp.OtherApp.ListOtherAppFragment;
 import android.ict.appcampaign.R;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -15,6 +17,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
@@ -30,12 +34,11 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-public class MyAppActivity extends AppCompatActivity implements GetPointUserListener, GetDataListener, GetDataOtherListener {
+public class MyAppActivity extends AppCompatActivity implements GetPointUserListener {
 
     ImageView ivBack;
     ViewPager viewPager;
@@ -46,9 +49,7 @@ public class MyAppActivity extends AppCompatActivity implements GetPointUserList
     FirebaseFirestore db;
     FirebaseAuth auth;
     int getPositionTab = 0;
-    List<AppItem> getlistOtherApps;
-    List<AppItem> getlistCampaign;
-    GetDataSearchListener getDataSearchListener;
+    GetKeySearchListener getKeySearchListener;
 
 
     @Override
@@ -74,7 +75,6 @@ public class MyAppActivity extends AppCompatActivity implements GetPointUserList
         auth = FirebaseAuth.getInstance();
         InitViewPager();
         kiemtrataikhoan();
-
     }
 
     private void InitAction() {
@@ -82,6 +82,35 @@ public class MyAppActivity extends AppCompatActivity implements GetPointUserList
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+        searchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.d("SSSS",CONST.IDFragment);
+                if(CONST.IDFragment!=null)
+                {
+                    ListMyAppFragment listMyAppFragment = (ListMyAppFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + CONST.IDFragment + ":0");
+                    if(listMyAppFragment!=null)
+                    {
+                        getKeySearchListener = listMyAppFragment;
+                        getKeySearchListener.onGetKey(s);
+                    }
+                    ListOtherAppFragment listOtherAppFragment = (ListOtherAppFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + CONST.IDFragment + ":1");
+                    if(listOtherAppFragment!=null)
+                    {
+                        getKeySearchListener =  listOtherAppFragment;
+                        getKeySearchListener.onGetKey(s);
+                    }
+                }
+                return false;
             }
         });
     }
@@ -170,82 +199,4 @@ public class MyAppActivity extends AppCompatActivity implements GetPointUserList
         super.onAttachFragment(fragment);
     }
 
-    @Override
-    public void GetList(List<AppItem> listCampaign, final String idFragment) {
-        getlistCampaign = listCampaign;
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            List<AppItem> listTemp = new ArrayList<>();
-
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                if (getPositionTab == 0) {
-                    listTemp.clear();
-                    if (s.length() == 0) {
-                        listTemp.addAll(getlistCampaign);
-                    } else {
-                        for (AppItem appItem : getlistCampaign) {
-                            try{
-                                if (appItem.getNameApp().toLowerCase().substring(0, s.length()).contains(s.toLowerCase())) {
-                                    listTemp.add(appItem);
-                                }
-                            }   catch (Exception e){
-
-                            }
-                        }
-                    }
-                    ListMyAppFragment listMyAppFragment = (ListMyAppFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + idFragment + ":0");
-                    if (listMyAppFragment != null) {
-                        getDataSearchListener = listMyAppFragment;
-                        getDataSearchListener.onPassListSearch(listTemp);
-                    }
-                }
-
-                return false;
-            }
-        });
-    }
-
-    @Override
-    public void GetListOther(List<AppItem> listOtherApps, final String idFragment) {
-        getlistOtherApps = listOtherApps;
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            List<AppItem> listTemp = new ArrayList<>();
-
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                if (getPositionTab == 1) {
-                    listTemp.clear();
-                    if (s.length() == 0) {
-                        listTemp.addAll(getlistOtherApps);
-                    } else {
-                        for (AppItem appItem : getlistOtherApps) {
-                            try{
-                                if (appItem.getNameApp().toLowerCase().substring(0, s.length()).contains(s.toLowerCase())) {
-                                    listTemp.add(appItem);
-                                }
-                            }   catch (Exception e){
-
-                            }
-                        }
-                    }
-                    ListMyAppFragment listMyAppFragment = (ListMyAppFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + idFragment + ":1");
-                    if (listMyAppFragment != null) {
-                        getDataSearchListener = listMyAppFragment;
-                        getDataSearchListener.onPassListSearch(listTemp);
-                    }
-                }
-                return false;
-            }
-        });
-    }
 }

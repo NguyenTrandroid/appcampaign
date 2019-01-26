@@ -179,33 +179,33 @@ public class HistoryActivity extends AppCompatActivity {
                         rvListHistory.setItemAnimator(new DefaultItemAnimator());
                         rvListHistory.setAdapter(historyAdapter);
                         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                            @Override
-                            public boolean onQueryTextSubmit(String s) {
+                                @Override
+                                public boolean onQueryTextSubmit(String s) {
 
-                                return false;
-                            }
+                                    return false;
+                                }
 
-                            @Override
-                            public boolean onQueryTextChange(String s) {
-                                arrayTemp.clear();
-                                if (s.length() == 0) {
-                                    arrayTemp.addAll(listApp);
-                                } else {
-                                    for (HistoryItem historyItem : listApp) {
-                                        try {
-                                            if (historyItem.getNameApp().toLowerCase().substring(0, s.length()).contains(s.toLowerCase())) {
-                                                arrayTemp.add(historyItem);
+                                @Override
+                                public boolean onQueryTextChange(String s) {
+                                    arrayTemp.clear();
+                                    if (s.length() == 0) {
+                                        arrayTemp.addAll(listApp);
+                                    } else {
+                                        for (HistoryItem historyItem : listApp) {
+                                            try {
+                                                if (historyItem.getNameApp().toLowerCase().substring(0, s.length()).contains(s.toLowerCase())) {
+                                                    arrayTemp.add(historyItem);
+                                                }
+                                            }   catch (Exception e){
+
                                             }
-                                        }   catch (Exception e){
-
                                         }
                                     }
+                                    ListHistoryAdapter listHistoryAdapter = new ListHistoryAdapter(HistoryActivity.this, arrayTemp);
+                                    rvListHistory.setAdapter(listHistoryAdapter);
+                                    historyAdapter.notifyDataSetChanged();
+                                    return false;
                                 }
-                                ListHistoryAdapter listHistoryAdapter = new ListHistoryAdapter(HistoryActivity.this, arrayTemp);
-                                rvListHistory.setAdapter(listHistoryAdapter);
-                                historyAdapter.notifyDataSetChanged();
-                                return false;
-                            }
                         });
 
 

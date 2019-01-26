@@ -10,4 +10,5 @@ public class CONST {
     public static final String MINUS ="MINUS";
     public static final String ALL_APPP="ALL_APP";
     public static final String MY_APPP="MY_APP";
+    public static String IDFragment = null;
 }

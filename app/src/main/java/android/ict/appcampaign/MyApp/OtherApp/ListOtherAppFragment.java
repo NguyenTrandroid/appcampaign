@@ -4,9 +4,7 @@ import android.content.Intent;
 import android.ict.appcampaign.AppItem;
 import android.ict.appcampaign.CONST;
 import android.ict.appcampaign.MyApp.AddApp.FindAppActivity;
-import android.ict.appcampaign.MyApp.InCampaign.ListMyAppAdapter;
-import android.ict.appcampaign.MyApp.Interface.GetDataListener;
-import android.ict.appcampaign.MyApp.Interface.GetDataSearchListener;
+import android.ict.appcampaign.MyApp.Interface.GetKeySearchListener;
 import android.ict.appcampaign.MyApp.Interface.GetPointUserListener;
 import android.ict.appcampaign.R;
 import android.ict.appcampaign.utils.DirectoryHelper;
@@ -18,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ListOtherAppFragment extends Fragment implements GetDataSearchListener {
+public class ListOtherAppFragment extends Fragment implements GetKeySearchListener {
 
     View view;
     ImageView ivAddApp;
@@ -52,20 +51,22 @@ public class ListOtherAppFragment extends Fragment implements GetDataSearchListe
     GetPointUserListener getPointUserListener;
     private FirebaseAuth mAuth;
     String pointUser;
-    GetDataListener getDataListener;
     AppItem appItem;
-    String IDFragment;
+    ListOtherApdapter listMyAppAdapter;
+    GridLayoutManager layoutManager;
+    SearchView searchView;
+    List<AppItem> listTest=null;
+    List<AppItem> listTemp;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         String getIDFragment = this.getTag();
         String[] output = getIDFragment.split(":", 4);
-        IDFragment = output[2];
+        CONST.IDFragment = output[2];
 
         mAuth = FirebaseAuth.getInstance();
         getPointUserListener = (GetPointUserListener) getContext();
-        getDataListener = (GetDataListener) getContext();
         db = FirebaseFirestore.getInstance();
 
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -87,6 +88,7 @@ public class ListOtherAppFragment extends Fragment implements GetDataSearchListe
     }
 
     private void InitView() {
+        searchView = getActivity().findViewById(R.id.searchview);
         ivAddApp = view.findViewById(R.id.iv_addApp);
         rvListMyApp = view.findViewById(R.id.rv_listMyApp);
             ivAddApp.setVisibility(View.VISIBLE);
@@ -103,12 +105,6 @@ public class ListOtherAppFragment extends Fragment implements GetDataSearchListe
         });
     }
 
-    @Override
-    public void onPassListSearch(List<AppItem> listSearch) {
-        ListMyAppAdapter myAppAdapter = new ListMyAppAdapter(getContext(), listSearch, pointUser);
-        rvListMyApp.setAdapter(myAppAdapter);
-        myAppAdapter.notifyDataSetChanged();
-    }
 
     private void GetMyApp(String idUser) {
         final DocumentReference docRef = db.collection("USER").document(idUser);
@@ -166,9 +162,10 @@ public class ListOtherAppFragment extends Fragment implements GetDataSearchListe
                             }
                         }
 
-                        getDataListener.GetList(listOtherApps, IDFragment);
-                        ListOtherApdapter listMyAppAdapter = new ListOtherApdapter(getContext(), listOtherApps, pointUser);
-                        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
+                        listTest = listOtherApps;
+
+                        listMyAppAdapter = new ListOtherApdapter(getContext(), listOtherApps, pointUser);
+                        layoutManager = new GridLayoutManager(getContext(), 1);
                         rvListMyApp.setLayoutManager(layoutManager);
                         rvListMyApp.setItemAnimator(new DefaultItemAnimator());
                         rvListMyApp.setAdapter(listMyAppAdapter);
@@ -198,5 +195,33 @@ public class ListOtherAppFragment extends Fragment implements GetDataSearchListe
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onGetKey(String keySearch) {
+        listTemp = new ArrayList<>();
+        listTemp.clear();
+        if(listTest!=null)
+        {
+            if (keySearch.length() == 0) {
+                listTemp.addAll(listTest);
+            } else {
+                for (AppItem appItem : listTest) {
+                    try {
+                        if (appItem.getNameApp().toLowerCase().substring(0, keySearch.length()).contains(keySearch.toLowerCase())) {
+                            listTemp.add(appItem);
+                        }
+                    }   catch (Exception e){
+
+                    }
+                }
+            }
+            listMyAppAdapter = new ListOtherApdapter(getContext(), listTemp, pointUser);
+            layoutManager = new GridLayoutManager(getContext(), 1);
+            rvListMyApp.setLayoutManager(layoutManager);
+            rvListMyApp.setItemAnimator(new DefaultItemAnimator());
+            rvListMyApp.setAdapter(listMyAppAdapter);
+            listMyAppAdapter.notifyDataSetChanged();
+        }
     }
 }
