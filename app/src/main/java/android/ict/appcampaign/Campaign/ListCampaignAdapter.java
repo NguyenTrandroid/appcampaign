@@ -94,11 +94,7 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
         viewHolder.tvNameApp.setText(appItem.getTenApp());
         viewHolder.tvDeveloper.setText(appItem.getNhaPhatTrien());
         viewHolder.tvPointApp.setText(appItem.getDiem() + "");
-        String fileName = appItem.getPackageName()+".webp";
-        File fileNameOnDevice = new File(Environment.getExternalStoragePublicDirectory
-                (DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-        Log.d("AAA",fileNameOnDevice+"");
-        Glide.with(context).load(fileNameOnDevice).into(viewHolder.ivAvatarApp);
+        Glide.with(context).load(appItem.getLinkIcon()).into(viewHolder.ivAvatarApp);
         viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

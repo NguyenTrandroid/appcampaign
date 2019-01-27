@@ -62,7 +62,6 @@ public class ListOtherAppFragment extends Fragment implements GetKeySearchListen
         String getIDFragment = this.getTag();
         String[] output = getIDFragment.split(":", 4);
         CONST.IDFragment = output[2];
-
         mAuth = FirebaseAuth.getInstance();
         getPointUserListener = (GetPointUserListener) getContext();
         db = FirebaseFirestore.getInstance();
