@@ -502,6 +502,8 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
+                                        sLoading.dismiss();
+                                        dialogRemoveApp.cancel();
                                     }
                                 });
                     }
