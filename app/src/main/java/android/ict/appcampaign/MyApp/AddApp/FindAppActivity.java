@@ -166,7 +166,7 @@ public class FindAppActivity extends AppCompatActivity {
                             if(task.getResult().exists()){
 
                                 sLoading.dismiss();
-                                Toast.makeText(FindAppActivity.this, "This package name already exist", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FindAppActivity.this, "This app is installed", Toast.LENGTH_SHORT).show();
                                 btFind.setEnabled(true);
                             }else {
                             DocumentSnapshot document = task.getResult();
