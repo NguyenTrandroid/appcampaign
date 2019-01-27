@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
@@ -162,6 +163,12 @@ public class FindAppActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
+                            if(task.getResult().exists()){
+
+                                sLoading.dismiss();
+                                Toast.makeText(FindAppActivity.this, "This package name already exist", Toast.LENGTH_SHORT).show();
+                                btFind.setEnabled(true);
+                            }else {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
                                 addApplication(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3));
@@ -170,9 +177,8 @@ public class FindAppActivity extends AppCompatActivity {
                                 StartDownloadAndUp(listGetInfoApp.get(1), listGetInfoApp.get(0));
                                 addApplication(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3));
                                 addListAdmin(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3), "1", String.valueOf(System.currentTimeMillis()), mAuth.getUid(),false);
-                            }
-                        } else {
-                            //Log.d(TAG, "get failed with ", task.getException());
+                            }}    } else {
+
                         }
                     }
                 });
@@ -343,7 +349,7 @@ public class FindAppActivity extends AppCompatActivity {
                         // This continuation runs on either success or failure, but if the task
                         // has failed then getResult() will throw an Exception which will be
                         // propagated down.
-
+                        sLoading.dismiss();
                         String result = (String) task.getResult().getData();
                         Log.d("teststring", result);
                         return result;

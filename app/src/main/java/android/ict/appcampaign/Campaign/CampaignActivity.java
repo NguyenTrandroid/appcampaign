@@ -223,8 +223,12 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
 //                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
 //                                                   addHistory(packagename + "/" + task.getResult().get("tenapp") + "/" + task.getResult().get("tennhaphattrien") + "/" + task.getResult().get("time"));
                                                        xoapointappuser2(1, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - 1), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
-
-                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
+                                                       Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                       intent.setData(Uri.parse("market://details?id="+packagename));
+//
+//                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
+//
+//                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
                                                        startActivityForResult(intent,2);
                                                    }else {
                                                        s.dismiss();
@@ -260,6 +264,8 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
 
 //                                                   }else{
 //                                                   }
+                                               }else{
+                                                   addDevice(packagename,String.valueOf(System.currentTimeMillis()));
                                                }
                                            }
                                        }
