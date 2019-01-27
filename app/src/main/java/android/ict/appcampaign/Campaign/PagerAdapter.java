@@ -1,6 +1,8 @@
 package android.ict.appcampaign.Campaign;
 
 import android.ict.appcampaign.CONST;
+import android.ict.appcampaign.Campaign.allapp.ListAllAppFragment;
+import android.ict.appcampaign.Campaign.myapp.ListMyAppFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -16,9 +18,9 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int i) {
         switch (i) {
             case 0:
-                return new ListCampaignFragment(CONST.ALL_APPP);
+                return new ListAllAppFragment();
             case 1:
-                return new ListCampaignFragment(CONST.MY_APPP);
+                return new ListMyAppFragment();
             default:
                 return null;
         }

@@ -2,7 +2,6 @@ package android.ict.appcampaign.Campaign;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.ict.appcampaign.AppItem;
@@ -10,7 +9,6 @@ import android.ict.appcampaign.Dialog.SLoading;
 import android.ict.appcampaign.Login.LoginActivity;
 import android.ict.appcampaign.R;
 import android.ict.appcampaign.utils.DirectoryHelper;
-import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -45,7 +43,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapter.ViewHolder> {
-
     Context context;
     List<ItemApp> listApp;
     onItemClick onItemClick;

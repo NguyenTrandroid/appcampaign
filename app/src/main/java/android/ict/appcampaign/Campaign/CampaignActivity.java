@@ -3,6 +3,10 @@ package android.ict.appcampaign.Campaign;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.ict.appcampaign.AppItem;
+import android.ict.appcampaign.CONST;
+import android.ict.appcampaign.Campaign.allapp.ListAllAppFragment;
+import android.ict.appcampaign.Campaign.interfacee.GetKeySearch;
+import android.ict.appcampaign.Campaign.myapp.ListMyAppFragment;
 import android.ict.appcampaign.Dialog.SLoading;
 import android.ict.appcampaign.Login.LoginActivity;
 import android.ict.appcampaign.R;
@@ -40,7 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CampaignActivity extends AppCompatActivity implements ListCampaignAdapter.onItemClick, GetData {
+public class CampaignActivity extends AppCompatActivity implements ListCampaignAdapter.onItemClick{
     int tabSeclec = 0;
     ImageView ivBack;
     TabLayout tabLayout;
@@ -50,8 +54,8 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     TextView tvPointUser;
     private FirebaseFirestore db;
     private FirebaseFunctions mFunctions;
-    PassData passData;
     SLoading s ;
+    GetKeySearch getKeySearch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,11 +111,36 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     }
 
     private void InitAction() {
-
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if(CONST.IDFragment!=null)
+                {
+                    ListAllAppFragment listAllAppFragment = (ListAllAppFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + CONST.IDFragment + ":0");
+                    if(listAllAppFragment !=null)
+                    {
+                        getKeySearch = listAllAppFragment;
+                        getKeySearch.onGetKey(s);
+                    }
+                    ListMyAppFragment listMyAppFragment = (ListMyAppFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + CONST.IDFragment + ":1");
+                    if(listMyAppFragment !=null)
+                    {
+                        getKeySearch = listMyAppFragment;
+                        getKeySearch.onGetKey(s);
+                    }
+                }
+                return false;
             }
         });
     }
@@ -486,63 +515,5 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     public void onBackPressed() {
         super.onBackPressed();
         finish();
-    }
-
-    @Override
-    public void getDaTa(final ArrayList<ItemApp> allApp, final ArrayList<ItemApp> myApp, final String getIdFragment) {
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            ArrayList<ItemApp> listTemp = new ArrayList<>();
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                if (tabSeclec == 0) {
-                    listTemp.clear();
-                    if (s.length() == 0) {
-                        listTemp.addAll(allApp);
-                    } else {
-                        for (ItemApp itemApp : allApp) {
-                            try {
-                                if (itemApp.getTenApp().toLowerCase().substring(0, s.length()).contains(s.toLowerCase())) {
-                                    listTemp.add(itemApp);
-                                }
-                            } catch (Exception e) {
-
-                            }
-                        }
-                    }
-                    ListCampaignFragment listCampaignFragment = (ListCampaignFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + getIdFragment + ":0");
-                    if (listCampaignFragment != null) {
-                        passData = listCampaignFragment;
-                        passData.passData(listTemp);
-                    }
-                } else {
-                    listTemp.clear();
-                    if (s.length() == 0) {
-                        listTemp.addAll(myApp);
-                    } else {
-                        for (ItemApp itemApp : myApp) {
-                            try {
-                                if (itemApp.getTenApp().toLowerCase().substring(0, s.length()).contains(s.toLowerCase())) {
-                                    listTemp.add(itemApp);
-                                }
-                            } catch (Exception e) {
-
-                            }
-
-                        }
-                    }
-                    ListCampaignFragment listCampaignFragment = (ListCampaignFragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + getIdFragment + ":1");
-                    if (listCampaignFragment != null) {
-                        passData = listCampaignFragment;
-                        passData.passData(listTemp);
-                    }
-                }
-                return false;
-            }
-        });
     }
 }

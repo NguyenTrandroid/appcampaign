@@ -87,8 +87,6 @@ public class MyAppActivity extends AppCompatActivity implements GetPointUserList
         searchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-
-
                 return false;
             }
 

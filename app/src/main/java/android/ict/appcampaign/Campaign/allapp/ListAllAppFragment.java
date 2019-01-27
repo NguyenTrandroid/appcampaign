@@ -1,7 +1,10 @@
-package android.ict.appcampaign.Campaign;
+package android.ict.appcampaign.Campaign.allapp;
 
 import android.annotation.SuppressLint;
 import android.ict.appcampaign.CONST;
+import android.ict.appcampaign.Campaign.ItemApp;
+import android.ict.appcampaign.Campaign.ListCampaignAdapter;
+import android.ict.appcampaign.Campaign.interfacee.GetKeySearch;
 import android.ict.appcampaign.R;
 import android.ict.appcampaign.utils.DirectoryHelper;
 import android.ict.appcampaign.utils.FishNameComparator;
@@ -12,16 +15,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -40,31 +40,23 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressLint("ValidFragment")
-public class ListCampaignFragment extends Fragment implements PassData {
+public class ListAllAppFragment extends Fragment implements GetKeySearch {
     View view;
     final String TAG = "SangDt";
     RecyclerView recyclerView;
     ListCampaignAdapter listCampaignAdapter;
     ArrayList<ItemApp> appArrayList = new ArrayList<>();
     ArrayList<ItemApp> appArrayListMyApp = new ArrayList<>();
-    String Type;
     String uid;
     String pointUser;
     private StorageReference storageReference;
     private FirebaseFirestore db;
-    GetData getData;
     String getIDFragment;
-
-    @SuppressLint("ValidFragment")
-    public ListCampaignFragment(String Type) {
-        this.Type = Type;
-    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_campaign, container, false);
-        getData = (GetData) getActivity();
         String IDFragment = this.getTag();
         String[] output = IDFragment.split(":", 4);
         getIDFragment = output[2];
@@ -143,28 +135,27 @@ public class ListCampaignFragment extends Fragment implements PassData {
                                 appArrayList.add(itemApp);
                             }
                         }
-                        Collections.sort(appArrayList, new FishNameComparator());
-                        for (int i = 0; i < appArrayList.size() - 1; i++) {
-                            if (appArrayList.get(i).getDoUuTien() == appArrayList.get(i + 1).getDoUuTien() && appArrayList.get(i).getTime() < appArrayList.get(i + 1).getTime()) {
-                                swap(appArrayList.get(i), appArrayList.get(i + 1));
-                            }
-                        }
-                        if (Type.equals(CONST.ALL_APPP)) {
-                            for (int i = 0; i < appArrayList.size(); i++) {
-                                if (appArrayList.get(i).getUserid().equals(uid)) {
-                                    ItemApp itemAppx = new ItemApp();
-                                    itemAppx = appArrayList.get(i);
-                                    appArrayList.remove(i);
-                                    appArrayList.add(0, itemAppx);
-                                }
-                            }
-                            listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayList, pointUser);
-                        }
-                        if (Type.equals(CONST.MY_APPP)) {
-                            Collections.sort(appArrayListMyApp, new FishNameComparator());
-                            listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListMyApp, pointUser);
-                        }
-                        getData.getDaTa(appArrayList, appArrayListMyApp, getIDFragment);
+//                        Collections.sort(appArrayList, new FishNameComparator());
+//                        for (int i = 0; i < appArrayList.size() - 1; i++) {
+//                            if (appArrayList.get(i).getDoUuTien() == appArrayList.get(i + 1).getDoUuTien() && appArrayList.get(i).getTime() < appArrayList.get(i + 1).getTime()) {
+//                                swap(appArrayList.get(i), appArrayList.get(i + 1));
+//                            }
+//                        }
+//                        if (Type.equals(CONST.ALL_APPP)) {
+//                            for (int i = 0; i < appArrayList.size(); i++) {
+//                                if (appArrayList.get(i).getUserid().equals(uid)) {
+//                                    ItemApp itemAppx = new ItemApp();
+//                                    itemAppx = appArrayList.get(i);
+//                                    appArrayList.remove(i);
+//                                    appArrayList.add(0, itemAppx);
+//                                }
+//                            }
+//                            listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayList, pointUser);
+//                        }
+//                        if (Type.equals(CONST.MY_APPP)) {
+//                            Collections.sort(appArrayListMyApp, new FishNameComparator());
+//                            listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListMyApp, pointUser);
+//                        }
                         recyclerView.setAdapter(listCampaignAdapter);
                     }
                 } catch (Exception s) {
@@ -211,23 +202,7 @@ public class ListCampaignFragment extends Fragment implements PassData {
     }
 
     @Override
-    public void passData(ArrayList<ItemApp> passData) {
-        Collections.sort(passData, new FishNameComparator());
-        for (int i = 0; i < passData.size() - 1; i++) {
-            if (passData.get(i).getDoUuTien() == passData.get(i + 1).getDoUuTien() && passData.get(i).getTime() < passData.get(i + 1).getTime()) {
-                swap(passData.get(i), passData.get(i + 1));
-            }
-        }
-        for (int i = 0; i < passData.size(); i++) {
-            if (passData.get(i).getUserid().equals(uid)) {
-                ItemApp itemAppx = new ItemApp();
-                itemAppx = passData.get(i);
-                passData.remove(i);
-                passData.add(0, itemAppx);
-            }
-        }
+    public void onGetKey(String keySearch) {
 
-        listCampaignAdapter = new ListCampaignAdapter(getContext(), passData, pointUser);
-        recyclerView.setAdapter(listCampaignAdapter);
     }
 }
