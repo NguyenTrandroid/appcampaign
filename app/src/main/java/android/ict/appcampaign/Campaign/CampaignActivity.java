@@ -276,7 +276,14 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
-            kiemtra();
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    kiemtra();
+                }
+            };
+
+            thread.start();
         }
     }
     private void kiemtra(){
@@ -437,7 +444,14 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     @Override
     protected void onResume() {
         super.onResume();
-        kiemtra();
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                kiemtra();
+            }
+        };
+
+        thread.start();
     }
 
     private void AppInstalled(final FirebaseAuth mAuth, final FirebaseFirestore db, final String packagename) {

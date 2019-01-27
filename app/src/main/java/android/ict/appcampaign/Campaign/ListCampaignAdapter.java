@@ -62,6 +62,9 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
         mAuth = FirebaseAuth.getInstance();
         onItemClick = (ListCampaignAdapter.onItemClick) context;
         mFunctions = FirebaseFunctions.getInstance();
+        dialogAddPoint=new Dialog(context);
+        dialogOption=new Dialog(context);
+        dialogRemoveApp=new Dialog(context);
     }
 
     @NonNull
@@ -105,7 +108,7 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
         viewHolder.ivEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogOption = new Dialog(context);
+//                dialogOption = new Dialog(context);
                 dialogOption.setContentView(R.layout.dialog_option_app);
                 dialogOption.setCanceledOnTouchOutside(false);
                 Objects.requireNonNull(dialogOption.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -115,17 +118,19 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
                 final Button btOption = dialogOption.findViewById(R.id.bt_option);
                 final TextView tvOptionPoint = dialogOption.findViewById(R.id.tv_pointOption);
 
-                try {
-                    if(LoginActivity.isConnected()){
-                        dialogOption.show();
-                    } else {
-                        Toast.makeText(context,"No Internet",Toast.LENGTH_SHORT).show();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
+//                try {
+//                    if(LoginActivity.isConnected()){
+                if(!dialogOption.isShowing()&&!dialogRemoveApp.isShowing()) {
+                    dialogOption.show();
                 }
+//                    } else {
+//                        Toast.makeText(context,"No Internet",Toast.LENGTH_SHORT).show();
+//                    }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
                 if (tabLayout.getSelectedTabPosition() == 0) {
                     btOption.setText("PLUS");
                     tvOptionPoint.setText("0");
@@ -377,23 +382,25 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
         viewHolder.ivRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogRemoveApp = new Dialog(context);
+//                dialogRemoveApp = new Dialog(context);
                 dialogRemoveApp.setContentView(R.layout.dialog_remove_app);
                 dialogRemoveApp.setCanceledOnTouchOutside(false);
                 Objects.requireNonNull(dialogRemoveApp.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 Button btRemove = dialogRemoveApp.findViewById(R.id.bt_remove);
                 Button btCancel = dialogRemoveApp.findViewById(R.id.bt_cancel);
-                try {
-                    if(LoginActivity.isConnected()){
-                        dialogRemoveApp.show();
-                    } else {
-                        Toast.makeText(context,"No Internet",Toast.LENGTH_SHORT).show();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
+//                try {
+//                    if(LoginActivity.isConnected()){
+                if(!dialogRemoveApp.isShowing()&&!dialogOption.isShowing()) {
+                    dialogRemoveApp.show();
                 }
+//                    } else {
+//                        Toast.makeText(context,"No Internet",Toast.LENGTH_SHORT).show();
+//                    }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
                 btRemove.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

@@ -62,6 +62,7 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         mFunctions = FirebaseFunctions.getInstance();
+        dialogAddPoint=new Dialog(context);
 
     }
 
@@ -94,7 +95,7 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
         viewHolder.cvApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogAddPoint = new Dialog(context);
+//                dialogAddPoint = new Dialog(context);
                 dialogAddPoint.setOnShowListener(new DialogInterface.OnShowListener() {
                     @Override
                     public void onShow(DialogInterface dialog) {
@@ -124,7 +125,9 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                 Button btAddPoint = dialogAddPoint.findViewById(R.id.bt_plus);
                 Button btCancel = dialogAddPoint.findViewById(R.id.bt_cancel);
                 tvPointPlus = dialogAddPoint.findViewById(R.id.tv_pointPlus);
-                dialogAddPoint.show();
+                if(!dialogAddPoint.isShowing()){
+                    dialogAddPoint.show();
+                }
                 sbAddPoint.setMax(Integer.parseInt(pointUser));
                 sbAddPoint.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
@@ -200,7 +203,7 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
         viewHolder.ivCampaign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogAddPoint = new Dialog(context);
+//                dialogAddPoint = new Dialog(context);
                 dialogAddPoint.setOnShowListener(new DialogInterface.OnShowListener() {
                     @Override
                     public void onShow(DialogInterface dialog) {
@@ -230,7 +233,10 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                 Button btAddPoint = dialogAddPoint.findViewById(R.id.bt_plus);
                 Button btCancel = dialogAddPoint.findViewById(R.id.bt_cancel);
                 tvPointPlus = dialogAddPoint.findViewById(R.id.tv_pointPlus);
-                dialogAddPoint.show();
+                if(!dialogAddPoint.isShowing()){
+
+                    dialogAddPoint.show();
+                }
                 sbAddPoint.setMax(Integer.parseInt(pointUser));
                 sbAddPoint.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
