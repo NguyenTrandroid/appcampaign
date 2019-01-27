@@ -50,7 +50,6 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
     Context context;
     List<AppItem> listApp;
     String pointUser;
-    AppItem appItem;
     FirebaseFirestore db;
     FirebaseAuth mAuth;
     FirebaseFunctions mFunctions;
@@ -96,8 +95,7 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
         viewHolder.tvPointApp.setTextColor(Color.parseColor("#ffffff"));
         viewHolder.ivThunder.setImageResource(R.drawable.ic_thunder);
 
-        appItem = new AppItem();
-        appItem = listApp.get(i);
+        final AppItem appItem = listApp.get(i);
         viewHolder.tvNameApp.setText(appItem.getNameApp());
         viewHolder.tvDeveloper.setText(appItem.getDevelper());
         viewHolder.tvPointApp.setText(appItem.getPoint());
@@ -474,17 +472,7 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                 Objects.requireNonNull(dialogRemoveApp.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 Button btRemove = dialogRemoveApp.findViewById(R.id.bt_remove);
                 Button btCancel = dialogRemoveApp.findViewById(R.id.bt_cancel);
-                try {
-                    if (LoginActivity.isConnected()) {
-                        dialogRemoveApp.show();
-                    } else {
-                        Toast.makeText(context, "No Internet", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                dialogRemoveApp.show();
 
 
                 btRemove.setOnClickListener(new View.OnClickListener() {

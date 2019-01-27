@@ -123,7 +123,6 @@ public class ListMyAppFragment extends Fragment implements GetKeySearchListener 
                     if (snapshot != null && snapshot.exists()) {
                         listOtherApps = new ArrayList<>();
                         listInCampaign = new ArrayList<>();
-//                    Log.d("DATAAA", "Current data: " + snapshot.getData());
                         for (Map.Entry<String, Object> entry : snapshot.getData().entrySet()) {
                             if ("listadd".equals(entry.getKey())) {
                                 Log.d("DATAAA", entry.getValue().toString());
@@ -138,24 +137,8 @@ public class ListMyAppFragment extends Fragment implements GetKeySearchListener 
                                     appItem.setPoint(allData.get(CONST.POINTS));
                                     appItem.setUrlImage(allData.get(CONST.IMAGE));
 
-                                    if (!isExistedFileOnApp(appItem.getPackageName())) {
-                                        String fileName = appItem.getPackageName() + ".webp";
-                                        StorageReference downloadRef = storageReference.child(fileName);
-                                        File fileNameOnDevice = new File(Environment.getExternalStoragePublicDirectory(DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-                                        downloadRef.getFile(fileNameOnDevice).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                            @Override
-                                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception exception) {
-
-                                            }
-                                        });
-                                        if (!appItem.getPoint().equals("0"))
-                                            listInCampaign.add(appItem);
-                                    }
+                                    if (!appItem.getPoint().equals("0"))
+                                        listInCampaign.add(appItem);
                                 }
                             }
                             if ("points".equals(entry.getKey())) {
@@ -179,7 +162,6 @@ public class ListMyAppFragment extends Fragment implements GetKeySearchListener 
 
                 }
                 try {
-
                     ListMyAppAdapter.sLoading.dismiss();
                 } catch (Exception s) {
 
@@ -187,16 +169,6 @@ public class ListMyAppFragment extends Fragment implements GetKeySearchListener 
 
             }
         });
-    }
-
-    private boolean isExistedFileOnApp(String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory
-                (DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-        if (file.exists()) {
-            Log.d("DOCCC", "exist");
-            return true;
-        }
-        return false;
     }
 
     @Override

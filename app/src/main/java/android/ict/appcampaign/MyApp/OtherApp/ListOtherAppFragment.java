@@ -23,8 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -120,7 +118,6 @@ public class ListOtherAppFragment extends Fragment implements GetKeySearchListen
 
                     if (snapshot != null && snapshot.exists()) {
                         listOtherApps = new ArrayList<>();
-//                    Log.d("DATAAA", "Current data: " + snapshot.getData());
                         for (Map.Entry<String, Object> entry : snapshot.getData().entrySet()) {
                             if ("listadd".equals(entry.getKey())) {
                                 Log.d("DATAAA", entry.getValue().toString());
@@ -135,28 +132,11 @@ public class ListOtherAppFragment extends Fragment implements GetKeySearchListen
                                     appItem.setPoint(allData.get(CONST.POINTS));
                                     appItem.setUrlImage(allData.get(CONST.IMAGE));
 
-                                    if (!isExistedFileOnApp(appItem.getPackageName())) {
-                                        String fileName = appItem.getPackageName() + ".webp";
-                                        StorageReference downloadRef = storageReference.child(fileName);
-                                        File fileNameOnDevice = new File(Environment.getExternalStoragePublicDirectory(DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-                                        downloadRef.getFile(fileNameOnDevice).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                            @Override
-                                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception exception) {
-
-                                            }
-                                        });
-                                        if ("0".equals(appItem.getPoint()))
-                                            listOtherApps.add(appItem);
-                                    }
+                                    if ("0".equals(appItem.getPoint()))
+                                        listOtherApps.add(appItem);
                                 }
                             }
                             if ("points".equals(entry.getKey())) {
-                                //Map<String, Integer> getPoints = (Map<String, Integer>) entry.getValue();
                                 pointUser = entry.getValue().toString();
                                 getPointUserListener.onGetPoint(pointUser);
                                 Log.d("ENTRY", entry.getValue().toString());
@@ -186,16 +166,6 @@ public class ListOtherAppFragment extends Fragment implements GetKeySearchListen
 
             }
         });
-    }
-
-    private boolean isExistedFileOnApp(String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory
-                (DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-        if (file.exists()) {
-            Log.d("DOCCC", "exist");
-            return true;
-        }
-        return false;
     }
 
     @Override

@@ -35,7 +35,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -53,9 +52,10 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
     FirebaseFunctions mFunctions;
     public static SLoading sLoading;
     View view;
-    Dialog dialogOption;
+    SeekBar sbAddPoint;
+    TextView tvPointPlus;
 
-    public ListOtherApdapter(Context context, List<AppItem> listApp,String pointUser) {
+    public ListOtherApdapter(Context context, List<AppItem> listApp, String pointUser) {
         this.context = context;
         this.listApp = listApp;
         this.pointUser = pointUser;
@@ -69,7 +69,7 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
     @Override
     public ListOtherApdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        view = layoutInflater.inflate(R.layout.layout_app,viewGroup,false);
+        view = layoutInflater.inflate(R.layout.layout_app, viewGroup, false);
         return new ListOtherApdapter.ViewHolder(view);
     }
 
@@ -86,22 +86,10 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
         viewHolder.tvPointApp.setVisibility(View.INVISIBLE);
         viewHolder.ivThunder.setVisibility(View.INVISIBLE);
 
-
         final AppItem appItem = listApp.get(i);
         viewHolder.tvNameApp.setText(appItem.getNameApp());
         viewHolder.tvDeveloper.setText(appItem.getDevelper());
-        String fileName = appItem.getPackageName()+".webp";
-        File fileNameOnDevice = new File(Environment.getExternalStoragePublicDirectory(DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-        Glide.with(context).load(fileNameOnDevice).into(viewHolder.ivAvatarApp);
-        Log.d("DOCCCC","test"+appItem.getNameApp());
-
-        if (fileNameOnDevice.exists()) {
-            Glide.with(context).load(fileNameOnDevice).into(viewHolder.ivAvatarApp);
-        }
-        else
-        {
-            Glide.with(context).load(appItem.getUrlImage()).into(viewHolder.ivAvatarApp);
-        }
+        Glide.with(context).load(appItem.getUrlImage()).into(viewHolder.ivAvatarApp);
 
         viewHolder.cvApp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,26 +120,16 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                 dialogAddPoint.setContentView(R.layout.dialog_add_point);
                 dialogAddPoint.setCanceledOnTouchOutside(false);
                 Objects.requireNonNull(dialogAddPoint.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                final SeekBar sbAddPoint = dialogAddPoint.findViewById(R.id.sb_addPoint);
+                sbAddPoint = dialogAddPoint.findViewById(R.id.sb_addPoint);
                 Button btAddPoint = dialogAddPoint.findViewById(R.id.bt_plus);
                 Button btCancel = dialogAddPoint.findViewById(R.id.bt_cancel);
-                final TextView tvPointPlus = dialogAddPoint.findViewById(R.id.tv_pointPlus);
-                try {
-                    if(LoginActivity.isConnected()){
-                        dialogAddPoint.show();
-                    } else {
-                        Toast.makeText(context,"No Internet",Toast.LENGTH_SHORT).show();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                tvPointPlus = dialogAddPoint.findViewById(R.id.tv_pointPlus);
+                dialogAddPoint.show();
                 sbAddPoint.setMax(Integer.parseInt(pointUser));
                 sbAddPoint.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        tvPointPlus.setText(progress+"");
+                        tvPointPlus.setText(progress + "");
                     }
 
                     @Override
@@ -173,11 +151,9 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                 btAddPoint.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sLoading= new SLoading(context);
+                        sLoading = new SLoading(context);
                         sLoading.show();
-                        //PlusPointUser(sbAddPoint.getProgress(),appItem.getPackageName());
-                        if(sbAddPoint.getProgress()!=0)
-                        {
+                        if (sbAddPoint.getProgress() != 0) {
                             db.collection("USER").document(mAuth.getUid())
                                     .get()
                                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -188,20 +164,13 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                                                                            if ("listadd".equals(entry.getKey())) {
                                                                                Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
                                                                                for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
-                                                                                   if(entryNested.getKey().equals(appItem.getPackageName())){
+                                                                                   if (entryNested.getKey().equals(appItem.getPackageName())) {
                                                                                        AppItem appItem = new AppItem();
                                                                                        appItem.setPackageName(entryNested.getKey());
                                                                                        Map<String, String> allData = (Map<String, String>) entryNested.getValue();
-                                                                                       if(dialogOption!=null)
-                                                                                       {
-                                                                                           dialogOption.cancel();
-                                                                                       }
-                                                                                       if(dialogAddPoint!=null)
-                                                                                       {
-                                                                                           dialogAddPoint.cancel();
-                                                                                       }
+
                                                                                        if (task.getResult().exists()) {
-                                                                                           addPointV2(sbAddPoint.getProgress(),appItem.getPackageName(),String.valueOf(Integer.parseInt(allData.get("points"))+sbAddPoint.getProgress()),allData.get("linkanh"),allData.get("tenapp"),allData.get("tennhaphattrien"),"","","","");
+                                                                                           addPointV2(sbAddPoint.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) + sbAddPoint.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
                                                                                        }
                                                                                    }
                                                                                }
@@ -220,9 +189,7 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                                             dialogAddPoint.cancel();
                                         }
                                     });
-                        }
-                        else
-                        {
+                        } else {
                             sLoading.dismiss();
                             dialogAddPoint.cancel();
                         }
@@ -259,26 +226,16 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                 dialogAddPoint.setContentView(R.layout.dialog_add_point);
                 dialogAddPoint.setCanceledOnTouchOutside(false);
                 Objects.requireNonNull(dialogAddPoint.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                final SeekBar sbAddPoint = dialogAddPoint.findViewById(R.id.sb_addPoint);
+                sbAddPoint = dialogAddPoint.findViewById(R.id.sb_addPoint);
                 Button btAddPoint = dialogAddPoint.findViewById(R.id.bt_plus);
                 Button btCancel = dialogAddPoint.findViewById(R.id.bt_cancel);
-                final TextView tvPointPlus = dialogAddPoint.findViewById(R.id.tv_pointPlus);
-                try {
-                    if(LoginActivity.isConnected()){
-                        dialogAddPoint.show();
-                    } else {
-                        Toast.makeText(context,"No Internet",Toast.LENGTH_SHORT).show();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                tvPointPlus = dialogAddPoint.findViewById(R.id.tv_pointPlus);
+                dialogAddPoint.show();
                 sbAddPoint.setMax(Integer.parseInt(pointUser));
                 sbAddPoint.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        tvPointPlus.setText(progress+"");
+                        tvPointPlus.setText(progress + "");
                     }
 
                     @Override
@@ -294,17 +251,18 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                 btCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        dialogAddPoint.cancel();
+                        if(dialogAddPoint!=null)
+                        {
+                            dialogAddPoint.cancel();
+                        }
                     }
                 });
                 btAddPoint.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sLoading= new SLoading(context);
+                        sLoading = new SLoading(context);
                         sLoading.show();
-                        //PlusPointUser(sbAddPoint.getProgress(),appItem.getPackageName());
-                        if(sbAddPoint.getProgress()!=0)
-                        {
+                        if (sbAddPoint.getProgress() != 0) {
                             db.collection("USER").document(mAuth.getUid())
                                     .get()
                                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -315,20 +273,12 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                                                                            if ("listadd".equals(entry.getKey())) {
                                                                                Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
                                                                                for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
-                                                                                   if(entryNested.getKey().equals(appItem.getPackageName())){
+                                                                                   if (entryNested.getKey().equals(appItem.getPackageName())) {
                                                                                        AppItem appItem = new AppItem();
                                                                                        appItem.setPackageName(entryNested.getKey());
                                                                                        Map<String, String> allData = (Map<String, String>) entryNested.getValue();
-                                                                                       if(dialogOption!=null)
-                                                                                       {
-                                                                                           dialogOption.cancel();
-                                                                                       }
-                                                                                       if(dialogAddPoint!=null)
-                                                                                       {
-                                                                                           dialogAddPoint.cancel();
-                                                                                       }
                                                                                        if (task.getResult().exists()) {
-                                                                                           addPointV2(sbAddPoint.getProgress(),appItem.getPackageName(),String.valueOf(Integer.parseInt(allData.get("points"))+sbAddPoint.getProgress()),allData.get("linkanh"),allData.get("tenapp"),allData.get("tennhaphattrien"),"","","","");
+                                                                                           addPointV2(sbAddPoint.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) + sbAddPoint.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
                                                                                        }
                                                                                    }
                                                                                }
@@ -345,9 +295,7 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                                         public void onFailure(@NonNull Exception e) {
                                         }
                                     });
-                        }
-                        else
-                        {
+                        } else {
                             sLoading.dismiss();
                             dialogAddPoint.cancel();
                         }
@@ -357,69 +305,37 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
         });
     }
 
-    private Task<String> addPointV2(int diemremoveuser,String listappPackagename,String listappPoint,String listappLinkanh,String listappTenapp
-            ,String listappTennhaphattrien,String adminpoint,String admindouutien,String admintime,String adminuserid) {
+    private Task<String> addPointV2(int diemremoveuser, String listappPackagename, String listappPoint, String listappLinkanh, String listappTenapp
+            , String listappTennhaphattrien, String adminpoint, String admindouutien, String admintime, String adminuserid) {
         // Create the arguments to the callable function.
-        Map<String,Object> data = new HashMap<>();
-        data.put("diemremoveuser",diemremoveuser);
-        data.put("listappPackagename",listappPackagename);
-        data.put("listappPoint",listappPoint);
-        data.put("listappLinkanh",listappLinkanh);
-        data.put("listappTenapp",listappTenapp);
-        data.put("listappTennhaphattrien",listappTennhaphattrien);
-        data.put("adminpackage","a");
-        data.put("adminpoint","a");
-        data.put("adminlinkanh","a");
-        data.put("admintenapp","a");
-        data.put("admintennhaphattrien","a");
-        data.put("admindouutien","a");
-        data.put("admintime","a");
-        data.put("adminuserid","a");
+        Map<String, Object> data = new HashMap<>();
+        data.put("diemremoveuser", diemremoveuser);
+        data.put("listappPackagename", listappPackagename);
+        data.put("listappPoint", listappPoint);
+        data.put("listappLinkanh", listappLinkanh);
+        data.put("listappTenapp", listappTenapp);
+        data.put("listappTennhaphattrien", listappTennhaphattrien);
+        data.put("adminpackage", "a");
+        data.put("adminpoint", "a");
+        data.put("adminlinkanh", "a");
+        data.put("admintenapp", "a");
+        data.put("admintennhaphattrien", "a");
+        data.put("admindouutien", "a");
+        data.put("admintime", "a");
+        data.put("adminuserid", "a");
         return mFunctions
                 .getHttpsCallable("addPointv2")
                 .call(data)
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        // This continuation runs on either success or failure, but if the task
-                        // has failed then getResult() will throw an Exception which will be
-                        // propagated down.
-                        String result = (String) task.getResult().getData();
-                        Log.d("teststring",result );
-                        return result;
-                    }
-                });
-    }
 
-    private Task<String> removePointV2(int diemadduser,String listappPackagename,String listappPoint,String listappLinkanh,String listappTenapp
-            ,String listappTennhaphattrien,String adminpoint,String admindouutien,String admintime,String adminuserid) {
-        // Create the arguments to the callable function.
-        Map<String,Object> data = new HashMap<>();
-        data.put("diemadduser",diemadduser);
-        data.put("listappPackagename",listappPackagename);
-        data.put("listappPoint",listappPoint);
-        data.put("listappLinkanh",listappLinkanh);
-        data.put("listappTenapp",listappTenapp);
-        data.put("listappTennhaphattrien",listappTennhaphattrien);
-        data.put("adminpackage","a");
-        data.put("adminpoint","a");
-        data.put("adminlinkanh","a");
-        data.put("admintenapp","a");
-        data.put("admintennhaphattrien","a");
-        data.put("admindouutien","a");
-        data.put("admintime","a");
-        data.put("adminuserid","a");
-        return mFunctions
-                .getHttpsCallable("removePointv2")
-                .call(data)
-                .continueWith(new Continuation<HttpsCallableResult, String>() {
-                    @Override
-                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        // This continuation runs on either success or failure, but if the task
-                        // has failed then getResult() will throw an Exception which will be
-                        // propagated down.
+                        if(dialogAddPoint!=null)
+                        {
+                            dialogAddPoint.cancel();
+                        }
                         String result = (String) task.getResult().getData();
-                        Log.d("teststring",result );
+                        Log.d("teststring", result);
                         return result;
                     }
                 });
