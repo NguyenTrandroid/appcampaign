@@ -15,6 +15,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,8 +49,8 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
 
     Context context;
     List<AppItem> listApp;
-    Dialog dialogAddPoint;
     String pointUser;
+    AppItem appItem;
     FirebaseFirestore db;
     FirebaseAuth mAuth;
     FirebaseFunctions mFunctions;
@@ -56,6 +58,12 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
     Dialog dialogRemoveApp;
     View view;
     Dialog dialogOption;
+    SeekBar sbPointOption;
+    TabLayout tabLayout;
+    String LogAAA;
+    Button btOption;
+    TextView tvOptionPoint;
+    int getPositionTab;
 
     public ListMyAppAdapter(Context context, List<AppItem> listApp, String pointUser) {
         this.context = context;
@@ -88,7 +96,8 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
         viewHolder.tvPointApp.setTextColor(Color.parseColor("#ffffff"));
         viewHolder.ivThunder.setImageResource(R.drawable.ic_thunder);
 
-        final AppItem appItem = listApp.get(i);
+        appItem = new AppItem();
+        appItem = listApp.get(i);
         viewHolder.tvNameApp.setText(appItem.getNameApp());
         viewHolder.tvDeveloper.setText(appItem.getDevelper());
         viewHolder.tvPointApp.setText(appItem.getPoint());
@@ -97,9 +106,7 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                 (DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
         if (fileNameOnDevice.exists()) {
             Glide.with(context).load(fileNameOnDevice).into(viewHolder.ivAvatarApp);
-        }
-        else
-        {
+        } else {
             Glide.with(context).load(appItem.getUrlImage()).into(viewHolder.ivAvatarApp);
         }
 
@@ -135,247 +142,39 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                 dialogOption.setContentView(R.layout.dialog_option_app);
                 dialogOption.setCanceledOnTouchOutside(false);
                 Objects.requireNonNull(dialogOption.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                TabLayout tabLayout = dialogOption.findViewById(R.id.tabOption);
-                final SeekBar sbPointOption = dialogOption.findViewById(R.id.sb_pointOption);
+                tabLayout = dialogOption.findViewById(R.id.tabOption);
+                sbPointOption = dialogOption.findViewById(R.id.sb_pointOption);
                 Button btCancel = dialogOption.findViewById(R.id.bt_cancel);
-                final Button btOption = dialogOption.findViewById(R.id.bt_option);
-                final TextView tvOptionPoint = dialogOption.findViewById(R.id.tv_pointOption);
+                btOption = dialogOption.findViewById(R.id.bt_option);
+                tvOptionPoint = dialogOption.findViewById(R.id.tv_pointOption);
                 dialogOption.show();
 
-                if (tabLayout.getSelectedTabPosition() == 0) {
+                if(tabLayout.getSelectedTabPosition()==0)
+                {
                     btOption.setText(R.string.plus);
-                    tvOptionPoint.setText("0");
+                    getPositionTab=0;
+                    tvOptionPoint.setText("+"+pointUser);
                     sbPointOption.setMax(Integer.valueOf(pointUser));
-                    sbPointOption.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            if (progress != 0) {
-                                tvOptionPoint.setText("+" + progress);
-                            } else {
-                                tvOptionPoint.setText("0");
-                            }
-                        }
-
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-
-                        }
-
-                        @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-
-                        }
-                    });
-                    btOption.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            sLoading = new SLoading(context);
-                            sLoading.show();
-                            if (sbPointOption.getProgress() != 0) {
-                                db.collection("USER").document(mAuth.getUid())
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                                   @Override
-                                                                   public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                                       if (task.getResult().exists()) {
-                                                                           for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                                                               if ("listadd".equals(entry.getKey())) {
-                                                                                   Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
-                                                                                   for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
-                                                                                       if (entryNested.getKey().equals(appItem.getPackageName())) {
-                                                                                           AppItem appItem = new AppItem();
-                                                                                           appItem.setPackageName(entryNested.getKey());
-                                                                                           Map<String, String> allData = (Map<String, String>) entryNested.getValue();
-                                                                                           if (dialogOption != null) {
-                                                                                               dialogOption.cancel();
-                                                                                           }
-                                                                                           if (dialogAddPoint != null) {
-                                                                                               dialogAddPoint.cancel();
-                                                                                           }
-                                                                                           if (task.getResult().exists()) {
-                                                                                               addPointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) + sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
-                                                                                           }
-                                                                                       }
-                                                                                   }
-                                                                               }
-
-                                                                           }
-                                                                       }
-                                                                   }
-
-                                                               }
-                                        )
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                            }
-                                        });
-                            } else {
-                                sLoading.dismiss();
-                                dialogOption.cancel();
-                            }
-                        }
-                    });
+                    sbPointOption.setProgress(Integer.valueOf(pointUser));
                 }
                 tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
-                        if (tab.getPosition() == 0 && pointUser != null) {
+                        if(tab.getPosition()==0)
+                        {
                             btOption.setText(R.string.plus);
-                            tvOptionPoint.setText("0");
+                            getPositionTab=0;
+                            tvOptionPoint.setText("+"+pointUser);
                             sbPointOption.setMax(Integer.valueOf(pointUser));
-                            sbPointOption.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                                @Override
-                                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                    if (progress != 0) {
-                                        tvOptionPoint.setText("+" + progress);
-                                    } else {
-                                        tvOptionPoint.setText("0");
-                                    }
-
-                                }
-
-                                @Override
-                                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                                }
-
-                                @Override
-                                public void onStopTrackingTouch(SeekBar seekBar) {
-
-                                }
-                            });
-                            btOption.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    sLoading = new SLoading(context);
-                                    sLoading.show();
-                                    //PlusPointUser(sbAddPoint.getProgress(),appItem.getPackageName());
-                                    if (sbPointOption.getProgress() != 0) {
-                                        viewHolder.ivCampaign.setClickable(false);
-                                        viewHolder.cvApp.setClickable(false);
-                                        db.collection("USER").document(mAuth.getUid())
-                                                .get()
-                                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                                           @Override
-                                                                           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                                               if (task.getResult().exists()) {
-                                                                                   for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                                                                       if ("listadd".equals(entry.getKey())) {
-                                                                                           Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
-                                                                                           for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
-                                                                                               if (entryNested.getKey().equals(appItem.getPackageName())) {
-                                                                                                   AppItem appItem = new AppItem();
-                                                                                                   appItem.setPackageName(entryNested.getKey());
-                                                                                                   Map<String, String> allData = (Map<String, String>) entryNested.getValue();
-                                                                                                   if (dialogOption != null) {
-                                                                                                       dialogOption.cancel();
-                                                                                                   }
-                                                                                                   if (dialogAddPoint != null) {
-                                                                                                       dialogAddPoint.cancel();
-                                                                                                   }
-                                                                                                   if (task.getResult().exists()) {
-                                                                                                       addPointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) + sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
-                                                                                                   }
-                                                                                               }
-                                                                                           }
-                                                                                       }
-
-                                                                                   }
-                                                                               }
-                                                                           }
-
-                                                                       }
-                                                )
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                    }
-                                                });
-                                    } else {
-                                        sLoading.dismiss();
-                                        dialogOption.cancel();
-                                    }
-                                }
-                            });
-                        } else if (tab.getPosition() == 1 && appItem.getPoint() != null) {
+                            sbPointOption.setProgress(Integer.valueOf(pointUser));
+                        }
+                        else
+                        {
                             btOption.setText(R.string.minus);
-                            tvOptionPoint.setText("0");
+                            getPositionTab=1;
+                            tvOptionPoint.setText("-"+appItem.getPoint());
                             sbPointOption.setMax(Integer.valueOf(appItem.getPoint()));
-                            sbPointOption.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                                @Override
-                                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                    if (progress != 0) {
-                                        tvOptionPoint.setText("-" + progress);
-                                    } else {
-                                        tvOptionPoint.setText("0");
-                                    }
-                                }
-
-                                @Override
-                                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                                }
-
-                                @Override
-                                public void onStopTrackingTouch(SeekBar seekBar) {
-
-                                }
-                            });
-                            btOption.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    sLoading = new SLoading(context);
-                                    sLoading.show();
-                                    if (sbPointOption.getProgress() != 0) {
-                                        viewHolder.ivCampaign.setClickable(false);
-                                        viewHolder.cvApp.setClickable(false);
-                                        db.collection("USER").document(mAuth.getUid())
-                                                .get()
-                                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                                           @Override
-                                                                           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                                               if (task.getResult().exists()) {
-                                                                                   for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                                                                       if ("listadd".equals(entry.getKey())) {
-                                                                                           Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
-                                                                                           for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
-                                                                                               if (entryNested.getKey().equals(appItem.getPackageName())) {
-                                                                                                   AppItem appItem = new AppItem();
-                                                                                                   appItem.setPackageName(entryNested.getKey());
-                                                                                                   Map<String, String> allData = (Map<String, String>) entryNested.getValue();
-                                                                                                   if (dialogOption != null) {
-                                                                                                       dialogOption.cancel();
-                                                                                                   }
-                                                                                                   if (dialogAddPoint != null) {
-                                                                                                       dialogAddPoint.cancel();
-                                                                                                   }
-                                                                                                   if (task.getResult().exists()) {
-
-                                                                                                       removePointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) - sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
-                                                                                                   }
-                                                                                               }
-                                                                                           }
-                                                                                       }
-
-                                                                                   }
-                                                                               }
-                                                                           }
-
-                                                                       }
-                                                )
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-//                                                            viewHolder.cvApp.setVisibility(View.VISIBLE);
-                                                    }
-                                                });
-                                    } else {
-                                        sLoading.dismiss();
-                                        dialogOption.cancel();
-                                    }
-                                }
-                            });
+                            sbPointOption.setProgress(Integer.valueOf(appItem.getPoint()));
                         }
                     }
 
@@ -387,6 +186,86 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                     @Override
                     public void onTabReselected(TabLayout.Tab tab) {
 
+                    }
+                });
+                sbPointOption.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if(getPositionTab==0)
+                        {
+                            tvOptionPoint.setText("+"+progress);
+                        }
+                        else
+                        {
+                            tvOptionPoint.setText("-"+progress);
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+
+                btOption.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        sLoading = new SLoading(context);
+                        sLoading.show();
+                        if (sbPointOption.getProgress() != 0) {
+                            viewHolder.ivCampaign.setClickable(false);
+                            viewHolder.cvApp.setClickable(false);
+                            db.collection("USER").document(mAuth.getUid())
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                               @Override
+                                                               public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                   if (task.getResult().exists()) {
+                                                                       for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
+                                                                           if ("listadd".equals(entry.getKey())) {
+                                                                               Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
+                                                                               for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
+                                                                                   if (entryNested.getKey().equals(appItem.getPackageName())) {
+                                                                                       AppItem appItem = new AppItem();
+                                                                                       appItem.setPackageName(entryNested.getKey());
+                                                                                       Map<String, String> allData = (Map<String, String>) entryNested.getValue();
+                                                                                       if (task.getResult().exists()) {
+                                                                                           if(getPositionTab==0)
+                                                                                           {
+                                                                                               addPointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) + sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
+                                                                                           }
+                                                                                           else
+                                                                                           {
+                                                                                               removePointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) - sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
+                                                                                           }
+                                                                                       }
+                                                                                   }
+                                                                               }
+                                                                           }
+
+                                                                       }
+                                                                   }
+                                                               }
+
+                                                           }
+                                    )
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            sLoading.dismiss();
+                                            dialogOption.cancel();
+                                        }
+                                    });
+                        } else {
+                            sLoading.dismiss();
+                            dialogOption.cancel();
+                        }
                     }
                 });
                 btCancel.setOnClickListener(new View.OnClickListener() {
@@ -400,307 +279,67 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
         viewHolder.ivEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewHolder.ivEdit.setClickable(false);
                 dialogOption = new Dialog(context);
+                dialogOption.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialog) {
+                        viewHolder.ivEdit.setClickable(false);
+                        viewHolder.ivRemove.setClickable(false);
+                        viewHolder.cvApp.setClickable(false);
+                    }
+                });
                 dialogOption.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
-                        viewHolder.ivCampaign.setClickable(true);
                         viewHolder.ivEdit.setClickable(true);
                         viewHolder.ivRemove.setClickable(true);
+                        viewHolder.cvApp.setClickable(true);
                     }
                 });
                 dialogOption.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialogInterface) {
-                        viewHolder.ivCampaign.setClickable(true);
                         viewHolder.ivEdit.setClickable(true);
                         viewHolder.ivRemove.setClickable(true);
+                        viewHolder.cvApp.setClickable(true);
                     }
                 });
                 dialogOption.setContentView(R.layout.dialog_option_app);
                 dialogOption.setCanceledOnTouchOutside(false);
                 Objects.requireNonNull(dialogOption.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                TabLayout tabLayout = dialogOption.findViewById(R.id.tabOption);
-                final SeekBar sbPointOption = dialogOption.findViewById(R.id.sb_pointOption);
+                tabLayout = dialogOption.findViewById(R.id.tabOption);
+                sbPointOption = dialogOption.findViewById(R.id.sb_pointOption);
                 Button btCancel = dialogOption.findViewById(R.id.bt_cancel);
-                final Button btOption = dialogOption.findViewById(R.id.bt_option);
-                final TextView tvOptionPoint = dialogOption.findViewById(R.id.tv_pointOption);
-                try {
-                    if (LoginActivity.isConnected()) {
-                        dialogOption.show();
-                    } else {
-                        Toast.makeText(context, "No Internet", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                btOption = dialogOption.findViewById(R.id.bt_option);
+                tvOptionPoint = dialogOption.findViewById(R.id.tv_pointOption);
+                dialogOption.show();
 
-
-                if (tabLayout.getSelectedTabPosition() == 0) {
+                if(tabLayout.getSelectedTabPosition()==0)
+                {
                     btOption.setText(R.string.plus);
-                    tvOptionPoint.setText("0");
+                    getPositionTab=0;
+                    tvOptionPoint.setText("+"+pointUser);
                     sbPointOption.setMax(Integer.valueOf(pointUser));
-                    sbPointOption.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            if (progress != 0) {
-                                tvOptionPoint.setText("+" + progress);
-                            } else {
-                                tvOptionPoint.setText("0");
-                            }
-                        }
-
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-
-                        }
-
-                        @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-
-                        }
-                    });
-                    btOption.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            sLoading = new SLoading(context);
-                            sLoading.show();
-                            //PlusPointUser(sbAddPoint.getProgress(),appItem.getPackageName());
-                            if (sbPointOption.getProgress() != 0) {
-//                                    viewHolder.cvApp.setVisibility(View.GONE);
-                                //removePoints(sbAddPoint.getProgress());
-                                db.collection("USER").document(mAuth.getUid())
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                                   @Override
-                                                                   public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                                       if (task.getResult().exists()) {
-                                                                           for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                                                               if ("listadd".equals(entry.getKey())) {
-                                                                                   Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
-                                                                                   for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
-                                                                                       if (entryNested.getKey().equals(appItem.getPackageName())) {
-//                                                                                               removePoints(sbPointOption.getProgress());
-                                                                                           AppItem appItem = new AppItem();
-                                                                                           appItem.setPackageName(entryNested.getKey());
-                                                                                           Map<String, String> allData = (Map<String, String>) entryNested.getValue();
-//                                                                                               addApplication(appItem.getPackageName(),String.valueOf(Integer.parseInt(allData.get("points"))+sbPointOption.getProgress()),allData.get("linkanh"),allData.get("tenapp"),allData.get("tennhaphattrien"));
-//                                                                                               PlusPointApp(sbPointOption.getProgress(),appItem.getPackageName());
-//                                                                                               PlusPointApp(appItem.getPackageName(),String.valueOf(Integer.parseInt(allData.get("points"))+sbPointOption.getProgress()),allData.get("linkanh"),allData.get("tenapp"),allData.get("tennhaphattrien"),sbPointOption.getProgress(),appItem.getPackageName());
-//                                                                                               PlusPointApp(sbPointOption.getProgress(),appItem.getPackageName(),String.valueOf(Integer.parseInt(allData.get("points"))+sbPointOption.getProgress()),allData.get("linkanh"),allData.get("tenapp"),allData.get("tennhaphattrien"),appItem.getPackageName());
-                                                                                           if (dialogOption != null) {
-                                                                                               dialogOption.cancel();
-                                                                                           }
-                                                                                           if (dialogAddPoint != null) {
-                                                                                               dialogAddPoint.cancel();
-                                                                                           }
-//                                               sLoading.dismiss();
-                                                                                           if (task.getResult().exists()) {
-//                                                   addPointV2(point,packagename,points,linkanh,tenapp,tennhaphattrien,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) + point),String.valueOf(task.getResult().get("douutien")),String.valueOf(task.getResult().get("time")),mAuth.getUid());
-//                                                   addListAdmin(packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) + point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")),String.valueOf(task.getResult().get("douutien")),String.valueOf(task.getResult().get("time")),mAuth.getUid());
-                                                                                               addPointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) + sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
-                                                                                           }
-                                                                                       }
-                                                                                   }
-                                                                               }
-
-                                                                           }
-                                                                       }
-                                                                   }
-
-                                                               }
-                                        )
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-//                                                    viewHolder.cvApp.setVisibility(View.VISIBLE);
-                                            }
-                                        });
-                            } else {
-                                sLoading.dismiss();
-                                dialogOption.cancel();
-                            }
-                        }
-                    });
+                    sbPointOption.setProgress(Integer.valueOf(pointUser));
                 }
                 tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
-                        if (tab.getPosition() == 0 && pointUser != null) {
+                        if(tab.getPosition()==0)
+                        {
                             btOption.setText(R.string.plus);
-                            tvOptionPoint.setText("0");
+                            getPositionTab=0;
+                            tvOptionPoint.setText("+"+pointUser);
                             sbPointOption.setMax(Integer.valueOf(pointUser));
-                            sbPointOption.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                                @Override
-                                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                    if (progress != 0) {
-                                        tvOptionPoint.setText("+" + progress);
-                                    } else {
-                                        tvOptionPoint.setText("0");
-                                    }
-
-                                }
-
-                                @Override
-                                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                                }
-
-                                @Override
-                                public void onStopTrackingTouch(SeekBar seekBar) {
-
-                                }
-                            });
-                            btOption.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    sLoading = new SLoading(context);
-                                    sLoading.show();
-                                    //PlusPointUser(sbAddPoint.getProgress(),appItem.getPackageName());
-                                    if (sbPointOption.getProgress() != 0) {
-//                                            viewHolder.cvApp.setVisibility(View.GONE);
-                                        //removePoints(sbAddPoint.getProgress());
-                                        db.collection("USER").document(mAuth.getUid())
-                                                .get()
-                                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                                           @Override
-                                                                           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                                               if (task.getResult().exists()) {
-                                                                                   for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                                                                       if ("listadd".equals(entry.getKey())) {
-                                                                                           Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
-                                                                                           for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
-                                                                                               if (entryNested.getKey().equals(appItem.getPackageName())) {
-//                                                                                                       removePoints(sbPointOption.getProgress());
-                                                                                                   AppItem appItem = new AppItem();
-                                                                                                   appItem.setPackageName(entryNested.getKey());
-                                                                                                   Map<String, String> allData = (Map<String, String>) entryNested.getValue();
-//                                                                                                       addApplication(appItem.getPackageName(),String.valueOf(Integer.parseInt(allData.get("points"))+sbPointOption.getProgress()),allData.get("linkanh"),allData.get("tenapp"),allData.get("tennhaphattrien"));
-//                                                                                                       PlusPointApp(sbPointOption.getProgress(),appItem.getPackageName());
-//                                                                                                       PlusPointApp(sbPointOption.getProgress(),appItem.getPackageName(),String.valueOf(Integer.parseInt(allData.get("points"))+sbPointOption.getProgress()),allData.get("linkanh"),allData.get("tenapp"),allData.get("tennhaphattrien"),appItem.getPackageName());
-                                                                                                   if (dialogOption != null) {
-                                                                                                       dialogOption.cancel();
-                                                                                                   }
-                                                                                                   if (dialogAddPoint != null) {
-                                                                                                       dialogAddPoint.cancel();
-                                                                                                   }
-//                                               sLoading.dismiss();
-                                                                                                   if (task.getResult().exists()) {
-//                                                   addPointV2(point,packagename,points,linkanh,tenapp,tennhaphattrien,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) + point),String.valueOf(task.getResult().get("douutien")),String.valueOf(task.getResult().get("time")),mAuth.getUid());
-//                                                   addListAdmin(packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) + point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")),String.valueOf(task.getResult().get("douutien")),String.valueOf(task.getResult().get("time")),mAuth.getUid());
-                                                                                                       addPointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) + sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
-                                                                                                   }
-                                                                                               }
-                                                                                           }
-                                                                                       }
-
-                                                                                   }
-                                                                               }
-                                                                           }
-
-                                                                       }
-                                                )
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-//                                                            viewHolder.cvApp.setVisibility(View.VISIBLE);
-                                                    }
-                                                });
-                                    } else {
-                                        sLoading.dismiss();
-                                        dialogOption.cancel();
-                                    }
-                                }
-                            });
-                        } else if (tab.getPosition() == 1 && appItem.getPoint() != null) {
+                            sbPointOption.setProgress(Integer.valueOf(pointUser));
+                        }
+                        else
+                        {
                             btOption.setText(R.string.minus);
-                            tvOptionPoint.setText("0");
+                            getPositionTab=1;
+                            tvOptionPoint.setText("-"+appItem.getPoint());
                             sbPointOption.setMax(Integer.valueOf(appItem.getPoint()));
-                            sbPointOption.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                                @Override
-                                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                    if (progress != 0) {
-                                        tvOptionPoint.setText("-" + progress);
-                                    } else {
-                                        tvOptionPoint.setText("0");
-                                    }
-                                }
-
-                                @Override
-                                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                                }
-
-                                @Override
-                                public void onStopTrackingTouch(SeekBar seekBar) {
-
-                                }
-                            });
-                            btOption.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    sLoading = new SLoading(context);
-                                    sLoading.show();
-                                    //PlusPointUser(sbAddPoint.getProgress(),appItem.getPackageName());
-                                    if (sbPointOption.getProgress() != 0) {
-//                                            viewHolder.cvApp.setVisibility(View.GONE);
-                                        //removePoints(sbAddPoint.getProgress());
-                                        db.collection("USER").document(mAuth.getUid())
-                                                .get()
-                                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                                           @Override
-                                                                           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                                               if (task.getResult().exists()) {
-                                                                                   for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                                                                       if ("listadd".equals(entry.getKey())) {
-                                                                                           Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
-                                                                                           for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
-                                                                                               if (entryNested.getKey().equals(appItem.getPackageName())) {
-//                                                                                                       addPoint(sbPointOption.getProgress());
-                                                                                                   AppItem appItem = new AppItem();
-                                                                                                   appItem.setPackageName(entryNested.getKey());
-                                                                                                   Map<String, String> allData = (Map<String, String>) entryNested.getValue();
-//                                                                                                       addApplication(appItem.getPackageName(),String.valueOf(Integer.parseInt(allData.get("points"))-sbPointOption.getProgress()),allData.get("linkanh"),allData.get("tenapp"),allData.get("tennhaphattrien"));
-//                                                                                                       MinusPointApp(sbPointOption.getProgress(),appItem.getPackageName());
-//                                                                                                       MinusPointApp(sbPointOption.getProgress(),appItem.getPackageName(),String.valueOf(Integer.parseInt(allData.get("points"))-sbPointOption.getProgress()),allData.get("linkanh"),allData.get("tenapp"),allData.get("tennhaphattrien"),appItem.getPackageName());
-                                                                                                   if (dialogOption != null) {
-                                                                                                       dialogOption.cancel();
-                                                                                                   }
-                                                                                                   if (dialogAddPoint != null) {
-                                                                                                       dialogAddPoint.cancel();
-                                                                                                   }
-//                                               sLoading.dismiss();
-                                                                                                   if (task.getResult().exists()) {
-
-                                                                                                       removePointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) - sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
-
-//                                                   addListAdmin(packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")),String.valueOf(task.getResult().get("douutien")),String.valueOf(task.getResult().get("time")),mAuth.getUid());
-                                                                                                   }
-                                                                                               }
-                                                                                           }
-                                                                                       }
-
-                                                                                   }
-                                                                               }
-                                                                           }
-
-                                                                       }
-                                                )
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-//                                                            viewHolder.cvApp.setVisibility(View.VISIBLE);
-                                                    }
-                                                });
-                                    } else {
-                                        sLoading.dismiss();
-                                        dialogOption.cancel();
-                                    }
-                                }
-                            });
+                            sbPointOption.setProgress(Integer.valueOf(appItem.getPoint()));
                         }
                     }
 
@@ -712,6 +351,86 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                     @Override
                     public void onTabReselected(TabLayout.Tab tab) {
 
+                    }
+                });
+                sbPointOption.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if(getPositionTab==0)
+                        {
+                            tvOptionPoint.setText("+"+progress);
+                        }
+                        else
+                        {
+                            tvOptionPoint.setText("-"+progress);
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+
+                btOption.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        sLoading = new SLoading(context);
+                        sLoading.show();
+                        if (sbPointOption.getProgress() != 0) {
+                            viewHolder.ivCampaign.setClickable(false);
+                            viewHolder.cvApp.setClickable(false);
+                            db.collection("USER").document(mAuth.getUid())
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                               @Override
+                                                               public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                   if (task.getResult().exists()) {
+                                                                       for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
+                                                                           if ("listadd".equals(entry.getKey())) {
+                                                                               Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
+                                                                               for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
+                                                                                   if (entryNested.getKey().equals(appItem.getPackageName())) {
+                                                                                       AppItem appItem = new AppItem();
+                                                                                       appItem.setPackageName(entryNested.getKey());
+                                                                                       Map<String, String> allData = (Map<String, String>) entryNested.getValue();
+                                                                                       if (task.getResult().exists()) {
+                                                                                           if(getPositionTab==0)
+                                                                                           {
+                                                                                               addPointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) + sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
+                                                                                           }
+                                                                                           else
+                                                                                           {
+                                                                                               removePointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) - sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
+                                                                                           }
+                                                                                       }
+                                                                                   }
+                                                                               }
+                                                                           }
+
+                                                                       }
+                                                                   }
+                                                               }
+
+                                                           }
+                                    )
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            sLoading.dismiss();
+                                            dialogOption.cancel();
+                                        }
+                                    });
+                        } else {
+                            sLoading.dismiss();
+                            dialogOption.cancel();
+                        }
                     }
                 });
                 btCancel.setOnClickListener(new View.OnClickListener() {
@@ -771,8 +490,6 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                 btRemove.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                            viewHolder.cvApp.setVisibility(View.GONE);
-                        //DeletePointUser(appItem.getPackageName());
                         sLoading = new SLoading(context);
                         sLoading.show();
                         db.collection("USER").document(mAuth.getUid())
@@ -789,23 +506,9 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                                                                                    AppItem appItem = new AppItem();
                                                                                    appItem.setPackageName(entryNested.getKey());
                                                                                    Map<String, String> allData = (Map<String, String>) entryNested.getValue();
-//                                                                                       addPoint(Integer.parseInt(allData.get("points")));
-//                                                                                       addApplication(appItem.getPackageName(),String.valueOf(Integer.parseInt(allData.get("points"))-Integer.parseInt(allData.get("points"))),allData.get("linkanh"),allData.get("tenapp"),allData.get("tennhaphattrien"));
-//                                                                                       DeletePointApp(appItem.getPackageName());
-//                                                                                       DeletePointApp(Integer.parseInt(allData.get("points")),appItem.getPackageName(),"0",allData.get("linkanh"),allData.get("tenapp"),allData.get("tennhaphattrien"),appItem.getPackageName());
-                                                                                   if (dialogOption != null) {
-                                                                                       dialogOption.cancel();
-                                                                                   }
-                                                                                   if (dialogAddPoint != null) {
-                                                                                       dialogAddPoint.cancel();
-                                                                                   }
-//                                               sLoading.dismiss();
                                                                                    if (task.getResult().exists()) {
                                                                                        removePointV2(Integer.parseInt(allData.get("points")), appItem.getPackageName(), "0", allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
-
-//                                                   addListAdmin(packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - Long.parseLong(String.valueOf(task.getResult().get("points")))), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")),String.valueOf(task.getResult().get("douutien")),String.valueOf(task.getResult().get("time")),mAuth.getUid());
                                                                                    }
-                                                                                   dialogRemoveApp.cancel();
                                                                                }
                                                                            }
                                                                        }
@@ -819,7 +522,6 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-//                                            viewHolder.cvApp.setVisibility(View.VISIBLE);
                                     }
                                 });
                     }
@@ -834,58 +536,6 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
             }
         });
 
-    }
-
-    private Task<String> addPoint(int points) {
-        // Create the arguments to the callable function.
-        Map<String, Object> data = new HashMap<>();
-        data.put("points", points);
-        return mFunctions
-                .getHttpsCallable("addPoint")
-                .call(data)
-                .continueWith(new Continuation<HttpsCallableResult, String>() {
-                    @Override
-                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        if (dialogRemoveApp != null) {
-                            dialogRemoveApp.cancel();
-                        }
-                        if (dialogOption != null) {
-                            dialogOption.cancel();
-                        }
-                        sLoading.dismiss();
-                        // This continuation runs on either success or failure, but if the task
-                        // has failed then getResult() will throw an Exception which will be
-                        // propagated down.
-                        String result = (String) task.getResult().getData();
-                        Log.d("teststring", result);
-                        return result;
-                    }
-                });
-    }
-
-    private void DeletePointApp(final int diemuser, final String packagename2, final String listapppoint, final String linkanh, final String tenapp, final String tennhaphattrien, final String packagename) {
-
-        db.collection("LISTAPP").document(packagename2)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-
-                                           @Override
-                                           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                               if (dialogOption != null) {
-                                                   dialogOption.cancel();
-                                               }
-                                               if (dialogAddPoint != null) {
-                                                   dialogAddPoint.cancel();
-                                               }
-//                                               sLoading.dismiss();
-                                               if (task.getResult().exists()) {
-                                                   removePointV2(diemuser, packagename2, listapppoint, linkanh, tenapp, tennhaphattrien, "0", String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), mAuth.getUid());
-
-//                                                   addListAdmin(packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - Long.parseLong(String.valueOf(task.getResult().get("points")))), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")),String.valueOf(task.getResult().get("douutien")),String.valueOf(task.getResult().get("time")),mAuth.getUid());
-                                               }
-                                           }
-                                       }
-                );
     }
 
     private Task<String> addPointV2(int diemremoveuser, String listappPackagename, String listappPoint, String listappLinkanh, String listappTenapp
@@ -912,9 +562,11 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        // This continuation runs on either success or failure, but if the task
-                        // has failed then getResult() will throw an Exception which will be
-                        // propagated down.
+
+                        if (dialogOption != null) {
+                            dialogOption.cancel();
+                        }
+
                         String result = (String) task.getResult().getData();
                         Log.d("teststring", result);
                         return result;
@@ -946,9 +598,16 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        // This continuation runs on either success or failure, but if the task
-                        // has failed then getResult() will throw an Exception which will be
-                        // propagated down.
+
+                        if(dialogRemoveApp!=null)
+                        {
+                            dialogRemoveApp.cancel();
+                        }
+                        if(dialogOption!=null)
+                        {
+                            dialogOption.cancel();
+                        }
+
                         String result = (String) task.getResult().getData();
                         Log.d("teststring", result);
                         return result;
