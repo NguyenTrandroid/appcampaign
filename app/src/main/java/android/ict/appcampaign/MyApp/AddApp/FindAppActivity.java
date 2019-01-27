@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.ict.appcampaign.CONST;
 import android.ict.appcampaign.Dialog.SLoading;
 import android.ict.appcampaign.MyApp.MyAppActivity;
 import android.ict.appcampaign.utils.DirectoryHelper;
@@ -195,9 +196,9 @@ public class FindAppActivity extends AppCompatActivity {
             listInfoApp.add(strings[0] + ".webp");
             try {
                 document = Jsoup.connect(url).get();
-                Elements subImage = document.select("div.hkhL9e");
-                Elements subName = document.select("h1.AHFaub > span");
-                Elements subDeveloper = document.select("a.hrTbp.R8zArc");
+                Elements subImage = document.select(CONST.KEY_IMAGE);
+                Elements subName = document.select(CONST.KEY_NAME);
+                Elements subDeveloper = document.select(CONST.KEY_DEVELOPER);
 
                 for (Element element : subImage) {
                     Element imgSubject = element.getElementsByTag("img").first();

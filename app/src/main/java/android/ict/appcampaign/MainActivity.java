@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.ict.appcampaign.Campaign.CampaignActivity;
 import android.ict.appcampaign.Login.LoginActivity;
 import android.ict.appcampaign.MyApp.MyAppActivity;
+import android.ict.appcampaign.MyApp.OtherApp.ListOtherApdapter;
 import android.ict.appcampaign.Profile.ProfileActivity;
 import android.ict.appcampaign.utils.Permissionruntime;
 import android.os.Environment;
@@ -13,6 +14,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -31,6 +34,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -50,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        GetKeyCHPlay();
         mainActivity = this;
         permissionruntime = new Permissionruntime(this);
         permissionruntime.requestPermission(null);
@@ -61,14 +70,46 @@ public class MainActivity extends AppCompatActivity {
 
     private void InitView() {
 //        writeFile();
-        db = FirebaseFirestore.getInstance();
         cvCampaign = findViewById(R.id.cv_campaign);
         cvMyApp = findViewById(R.id.cv_myApp);
         cvProfile = findViewById(R.id.cv_profile);
         tvPointUser = findViewById(R.id.tv_pointUser);
-        auth = FirebaseAuth.getInstance();
         setPoints(auth.getUid());
         kiemtrataikhoan();
+    }
+
+    private void GetKeyCHPlay()
+    {
+        db.collection("KEY").document("KEY").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                try {
+                    if (e != null) {
+                        Log.d("DATAAA", "ERROR");
+                        return;
+                    }
+
+                    if (snapshot != null && snapshot.exists()) {
+                        for (Map.Entry<String, Object> entry : snapshot.getData().entrySet()) {
+                            if(entry.getKey().equals("KeyName"))
+                                CONST.KEY_NAME = entry.getValue().toString();
+                            else if(entry.getKey().equals("KeyImage"))
+                                CONST.KEY_IMAGE = entry.getValue().toString();
+                            else if(entry.getKey().equals("KeyDeveloper"))
+                                CONST.KEY_DEVELOPER = entry.getValue().toString();
+                        }
+                        Log.d("KEYYYYY_NAME",CONST.KEY_NAME);
+                        Log.d("KEYYYYY_IMAGE",CONST.KEY_IMAGE);
+                        Log.d("KEYYYYY_DEVELOPER",CONST.KEY_DEVELOPER);
+
+                    } else {
+                        Log.d("DATAAA", "NULL");
+                    }
+                } catch (Exception s) {
+
+                }
+            }
+        });
     }
 
 
