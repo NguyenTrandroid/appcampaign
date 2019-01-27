@@ -545,6 +545,10 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
 
+                        if(sLoading!=null)
+                        {
+                            sLoading.dismiss();
+                        }
                         if(dialogRemoveApp!=null)
                         {
                             dialogRemoveApp.cancel();
@@ -587,6 +591,10 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
 
                         if (dialogOption != null) {
                             dialogOption.cancel();
+                        }
+                        if(sLoading!=null)
+                        {
+                            sLoading.dismiss();
                         }
 
                         String result = (String) task.getResult().getData();
