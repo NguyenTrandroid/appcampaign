@@ -42,29 +42,20 @@ import java.util.List;
 @SuppressLint("ValidFragment")
 public class ListAllAppFragment extends Fragment implements GetKeySearch {
     View view;
-    final String TAG = "SangDt";
     RecyclerView recyclerView;
     ListCampaignAdapter listCampaignAdapter;
-    ArrayList<ItemApp> appArrayList = new ArrayList<>();
-    ArrayList<ItemApp> appArrayListMyApp = new ArrayList<>();
+    ArrayList<ItemApp> appArrayListAllApp = new ArrayList<>();
     String uid;
     String pointUser;
-    private StorageReference storageReference;
     private FirebaseFirestore db;
-    String getIDFragment;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_campaign, container, false);
-        String IDFragment = this.getTag();
-        String[] output = IDFragment.split(":", 4);
-        getIDFragment = output[2];
         FirebaseAuth firebaseAuth;
         firebaseAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         uid = firebaseAuth.getUid();
-        storageReference = FirebaseStorage.getInstance().getReference();
         DocumentReference reference = db.collection("USER").document(uid);
         reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -112,8 +103,7 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                         return;
                     }
                     if (queryDocumentSnapshots != null) {
-                        appArrayListMyApp.clear();
-                        appArrayList.clear();
+                        appArrayListAllApp.clear();
                         List<DocumentSnapshot> documentSnapshots = queryDocumentSnapshots.getDocuments();
                         for (int i = 0; i < documentSnapshots.size(); i++) {
                             ItemApp itemApp = new ItemApp();
@@ -125,37 +115,25 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                             itemApp.setTenApp((String) documentSnapshots.get(i).getData().get("tenapp"));
                             itemApp.setPackageName(documentSnapshots.get(i).getId());
                             itemApp.setUserid(String.valueOf(documentSnapshots.get(i).getData().get("userid")));
-                            if (!isExistedFileOnApp(itemApp.getPackageName())) {
-                                DownloadOnCloudStorage(itemApp.getPackageName());
-                            }
-                            if (itemApp.getDiem() != 0) {
-                                if (itemApp.getUserid().equals(uid)) {
-                                    appArrayListMyApp.add(itemApp);
-                                }
-                                appArrayList.add(itemApp);
+                            if (itemApp.getDiem() > 0) {
+                                appArrayListAllApp.add(itemApp);
                             }
                         }
-//                        Collections.sort(appArrayList, new FishNameComparator());
-//                        for (int i = 0; i < appArrayList.size() - 1; i++) {
-//                            if (appArrayList.get(i).getDoUuTien() == appArrayList.get(i + 1).getDoUuTien() && appArrayList.get(i).getTime() < appArrayList.get(i + 1).getTime()) {
-//                                swap(appArrayList.get(i), appArrayList.get(i + 1));
-//                            }
-//                        }
-//                        if (Type.equals(CONST.ALL_APPP)) {
-//                            for (int i = 0; i < appArrayList.size(); i++) {
-//                                if (appArrayList.get(i).getUserid().equals(uid)) {
-//                                    ItemApp itemAppx = new ItemApp();
-//                                    itemAppx = appArrayList.get(i);
-//                                    appArrayList.remove(i);
-//                                    appArrayList.add(0, itemAppx);
-//                                }
-//                            }
-//                            listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayList, pointUser);
-//                        }
-//                        if (Type.equals(CONST.MY_APPP)) {
-//                            Collections.sort(appArrayListMyApp, new FishNameComparator());
-//                            listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListMyApp, pointUser);
-//                        }
+                        Collections.sort(appArrayListAllApp, new FishNameComparator());
+                        for (int i = 0; i < appArrayListAllApp.size() - 1; i++) {
+                            if (appArrayListAllApp.get(i).getDoUuTien() == appArrayListAllApp.get(i + 1).getDoUuTien() && appArrayListAllApp.get(i).getTime() < appArrayListAllApp.get(i + 1).getTime()) {
+                                swap(appArrayListAllApp.get(i), appArrayListAllApp.get(i + 1));
+                            }
+                        }
+                        for (int i = 0; i < appArrayListAllApp.size(); i++) {
+                                if (appArrayListAllApp.get(i).getUserid().equals(uid)) {
+                                    ItemApp itemAppx = new ItemApp();
+                                    itemAppx = appArrayListAllApp.get(i);
+                                    appArrayListAllApp.remove(i);
+                                    appArrayListAllApp.add(0, itemAppx);
+                                }
+                        }
+                        listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser);
                         recyclerView.setAdapter(listCampaignAdapter);
                     }
                 } catch (Exception s) {
@@ -171,36 +149,6 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
         itemApp1 = itemApp2;
         itemApp2 = itemApp;
     }
-
-    private void DownloadOnCloudStorage(final String packageName) {
-        final String fileName = packageName + ".webp";
-        StorageReference downloadRef = storageReference.child(fileName);
-        final File fileNameOnDevice = new File(Environment.getExternalStoragePublicDirectory(DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-        downloadRef.getFile(fileNameOnDevice).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                Log.d("DOCCC", "completed");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-
-            }
-        });
-    }
-
-    private boolean isExistedFileOnApp(String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory
-                (DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-        if (file.exists()) {
-            Log.d("DOCCC", "exist");
-            return true;
-        } else {
-            DirectoryHelper.createDirectory(getContext());
-        }
-        return false;
-    }
-
     @Override
     public void onGetKey(String keySearch) {
 
