@@ -5,12 +5,17 @@ public class HistoryItem {
     private String nameApp;
     private String develper;
     private String time;
+    private String img;
 
-    public HistoryItem(String packagename, String nameApp, String develper, String time) {
-        this.packagename = packagename;
-        this.nameApp = nameApp;
-        this.develper = develper;
-        this.time = time;
+    public HistoryItem() {
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 
     public String getNameApp() {
