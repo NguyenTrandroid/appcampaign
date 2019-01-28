@@ -46,7 +46,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
@@ -66,6 +68,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 public class FindAppActivity extends AppCompatActivity {
 
@@ -98,8 +102,46 @@ public class FindAppActivity extends AppCompatActivity {
         mFunctions = FirebaseFunctions.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
+        if(CONST.KEY_NAME==null || CONST.KEY_DEVELOPER==null || CONST.KEY_IMAGE==null)
+        {
+            GetKeyCHPlay();
+        }
         InitView();
         InitAction();
+    }
+
+    private void GetKeyCHPlay()
+    {
+        db.collection("KEY").document("KEY").addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                try {
+                    if (e != null) {
+                        Log.d("DATAAA", "ERROR");
+                        return;
+                    }
+
+                    if (snapshot != null && snapshot.exists()) {
+                        for (Map.Entry<String, Object> entry : snapshot.getData().entrySet()) {
+                            if(entry.getKey().equals("KeyName"))
+                                CONST.KEY_NAME = entry.getValue().toString();
+                            else if(entry.getKey().equals("KeyImage"))
+                                CONST.KEY_IMAGE = entry.getValue().toString();
+                            else if(entry.getKey().equals("KeyDeveloper"))
+                                CONST.KEY_DEVELOPER = entry.getValue().toString();
+                        }
+                        Log.d("KEYYYYY_NAME",CONST.KEY_NAME);
+                        Log.d("KEYYYYY_IMAGE",CONST.KEY_IMAGE);
+                        Log.d("KEYYYYY_DEVELOPER",CONST.KEY_DEVELOPER);
+
+                    } else {
+                        Log.d("DATAAA", "NULL");
+                    }
+                } catch (Exception s) {
+
+                }
+            }
+        });
     }
 
     private void InitView()
