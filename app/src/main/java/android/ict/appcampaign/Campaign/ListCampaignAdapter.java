@@ -88,6 +88,14 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
         firebaseAuth = FirebaseAuth.getInstance();
         String uid = firebaseAuth.getUid();
         final ItemApp appItem = listApp.get(i);
+        viewHolder.ivRemove.setVisibility(View.GONE);
+        viewHolder.ivEdit.setVisibility(View.GONE);
+        viewHolder.ivDownload.setVisibility(View.VISIBLE);
+        viewHolder.cardView.setCardBackgroundColor(Color.parseColor("#ffffff"));
+        viewHolder.tvDeveloper.setTextColor(Color.parseColor("#929292"));
+        viewHolder.tvNameApp.setTextColor(Color.parseColor("#66a2e2"));
+        viewHolder.tvPointApp.setTextColor(Color.parseColor("#66a2e2"));
+        viewHolder.ivThunder.setImageResource(R.drawable.ic_thunder_blue);
         if (appItem.getUserid().equals(uid)) {
             viewHolder.ivRemove.setVisibility(View.VISIBLE);
             viewHolder.ivEdit.setVisibility(View.VISIBLE);

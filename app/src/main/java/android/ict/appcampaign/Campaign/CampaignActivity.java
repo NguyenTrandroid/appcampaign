@@ -369,9 +369,24 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                     }
                 });
     }
+    private void addHistory(final int point, final String packagename) {
+        db.collection("LISTAPP").document(packagename)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                           @Override
+                                           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                               if(task.isSuccessful()){
+                                                   if (task.getResult().exists()) {
+                                                       addHistory(packagename + "<ict>" + task.getResult().get("tenapp") + "<ict>" + task.getResult().get("tennhaphattrien") + "<ict>" + task.getResult().get("time")+"<ict>"+task.getResult().get("linkanh"));
+                                                   }
+                                               }
+                                           }
+                                       }
+                );
+    }
 
     private void xoapointapplistapp2(final int point, final String packagename) {
-        Log.d("sdssdasdas", "xoapointapplistapp2: ");
+//        Log.d("sdssdasdas", "xoapointapplistapp2: ");
         db.collection("LISTAPP").document(packagename)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -382,8 +397,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
 
 //                                                   removePointV2(1,packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point),String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),)
 //                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
-                                                   addHistory(packagename + "<ict>" + task.getResult().get("tenapp") + "<ict>" + task.getResult().get("tennhaphattrien") + "<ict>" + task.getResult().get("time")+"<ict>"+task.getResult().get("linkanh"));
-                                                   xoapointappuser2(point, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
+                                                    xoapointappuser2(point, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
                                                }}else {
                                                    isshow=false;
                                                    s.dismiss();
@@ -500,7 +514,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                 if((System.currentTimeMillis()-Long.parseLong(String.valueOf(entry.getValue()))<3600000)){
                                     addDevice(packagename,"finished");
                                     addPoint(1);
-//                                    xoapointapplistapp2(1,packagename);
+                                    addHistory(0,packagename);
                                 }else {
                                     xoapointapplistapp2(-1,packagename);
                                 }
