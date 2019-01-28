@@ -40,6 +40,7 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @SuppressLint("ValidFragment")
@@ -127,20 +128,40 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                             }
                         }
                         appArrayList = appArrayListAllApp;
-                        Collections.sort(appArrayListAllApp, new FishNameComparator());
-                        for (int i = 0; i < appArrayListAllApp.size() - 1; i++) {
-                            if (appArrayListAllApp.get(i).getDoUuTien() == appArrayListAllApp.get(i + 1).getDoUuTien() && appArrayListAllApp.get(i).getTime() < appArrayListAllApp.get(i + 1).getTime()) {
-                                swap(appArrayListAllApp.get(i), appArrayListAllApp.get(i + 1));
-                            }
-                        }
-                        for (int i = 0; i < appArrayListAllApp.size(); i++) {
-                                if (appArrayListAllApp.get(i).getUserid().equals(uid)) {
-                                    ItemApp itemAppx = new ItemApp();
-                                    itemAppx = appArrayListAllApp.get(i);
-                                    appArrayListAllApp.remove(i);
-                                    appArrayListAllApp.add(0, itemAppx);
+                        Collections.sort(appArrayListAllApp, new Comparator<ItemApp>() {
+                            @Override
+                            public int compare(ItemApp itemApp, ItemApp t1) {
+                                Integer a =itemApp.getDoUuTien();
+                                Integer b =t1.getDoUuTien();
+                                int sizeCmp =a.compareTo(b);
+                                if (sizeCmp != 0) {
+                                    return sizeCmp;
+
                                 }
-                        }
+                                Long c =itemApp.getTime();
+                                Long d =t1.getTime();
+                                int nrOfToppingsCmp = c.compareTo(d);
+                                if (nrOfToppingsCmp != 0) {
+                                    return nrOfToppingsCmp;
+                                }
+                                return itemApp.getTenApp().compareTo(t1.getTenApp());
+                            }
+                        });
+
+//                        Collections.sort(appArrayListAllApp, new FishNameComparator());
+//                        for (int i = 0; i < appArrayListAllApp.size() - 1; i++) {
+//                            if (appArrayListAllApp.get(i).getDoUuTien() == appArrayListAllApp.get(i + 1).getDoUuTien() && appArrayListAllApp.get(i).getTime() < appArrayListAllApp.get(i + 1).getTime()) {
+//                                swap(appArrayListAllApp.get(i), appArrayListAllApp.get(i + 1));
+//                            }
+//                        }
+//                        for (int i = 0; i < appArrayListAllApp.size(); i++) {
+//                                if (appArrayListAllApp.get(i).getUserid().equals(uid)) {
+//                                    ItemApp itemAppx = new ItemApp();
+//                                    itemAppx = appArrayListAllApp.get(i);
+//                                    appArrayListAllApp.remove(i);
+//                                    appArrayListAllApp.add(0, itemAppx);
+//                                }
+//                        }
                         listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser);
                         recyclerView.setAdapter(listCampaignAdapter);
                     }

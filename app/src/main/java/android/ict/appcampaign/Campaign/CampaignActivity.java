@@ -220,36 +220,107 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
         editor.putString("packagename", packagename);
         editor.apply();
         s.show();
-        db.collection("LISTAPP").document(packagename)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                           @Override
-                                           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                               if (task.getResult().exists()) {
-                                                   if(Integer.parseInt(String.valueOf(task.getResult().get("points")))>0) {
-                                                       addDevices(packagename, String.valueOf(System.currentTimeMillis()));
+        DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        if (task.getResult().getData().containsKey(packagename)) {
+                            for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
+                                if (entry.getKey().equals(packagename)) {
+                                    if (String.valueOf(entry.getValue()).equals("finished")) {
+
+                                    } else if(String.valueOf(entry.getValue()).equals("break")){ db.collection("LISTAPP").document(packagename)
+                                            .get()
+                                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                       @Override
+                                                                       public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                           if (task.getResult().exists()) {
+                                                                               if(Integer.parseInt(String.valueOf(task.getResult().get("points")))>0) {
+                                                                                   addDevice(packagename, String.valueOf(System.currentTimeMillis()));
 //                                                   removePointV2(1,packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point),String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),)
 //                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
 //                                                   addHistory(packagename + "/" + task.getResult().get("tenapp") + "/" + task.getResult().get("tennhaphattrien") + "/" + task.getResult().get("time"));
-                                                       xoapointappuser2(1, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - 1), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
-                                                       Intent intent = new Intent(Intent.ACTION_VIEW);
-                                                       intent.setData(Uri.parse("market://details?id="+packagename));
+                                                                                   xoapointappuser2(1, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - 1), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
+                                                                               }else {
+                                                                                   s.dismiss();
+                                                                               }
+                                                                           }
+
+
+                                                                       }
+                                                                   }
+                                            );
+
+                                    }else if ((System.currentTimeMillis() - Long.parseLong(String.valueOf(entry.getValue())) > 3600000)) {
+                                        xoapointapplistapp2(-1, packagename);
+                                        addDevice(packagename, "break");
+                                    }
+
+                                }
+                            }
+                        }else {
+                            db.collection("LISTAPP").document(packagename)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                               @Override
+                                                               public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                   if (task.getResult().exists()) {
+                                                                       if(Integer.parseInt(String.valueOf(task.getResult().get("points")))>0) {
+                                                                           addDevices(packagename, String.valueOf(System.currentTimeMillis()));
+//                                                   removePointV2(1,packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point),String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),)
+//                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
+//                                                   addHistory(packagename + "/" + task.getResult().get("tenapp") + "/" + task.getResult().get("tennhaphattrien") + "/" + task.getResult().get("time"));
+                                                                           xoapointappuser2(1, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - 1), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
+                                                                       }else {
+                                                                           s.dismiss();
+                                                                       }
+                                                                   }
+
+
+                                                               }
+                                                           }
+                                    );
+                        }
+                    }else {
+                        db.collection("LISTAPP").document(packagename)
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                           @Override
+                                                           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                               if (task.getResult().exists()) {
+                                                                   if(Integer.parseInt(String.valueOf(task.getResult().get("points")))>0) {
+                                                                       addDevices(packagename, String.valueOf(System.currentTimeMillis()));
+//                                                   removePointV2(1,packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point),String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),)
+//                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
+//                                                   addHistory(packagename + "/" + task.getResult().get("tenapp") + "/" + task.getResult().get("tennhaphattrien") + "/" + task.getResult().get("time"));
+                                                                       xoapointappuser2(1, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - 1), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
+                                                                   }else {
+                                                                       s.dismiss();
+                                                                   }
+                                                               }
+
+
+                                                           }
+                                                       }
+                                );
+                    }
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("market://details?id="+packagename));
 //
 //                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
 //
 //                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
-                                                       intentch=true;
-                                                       isrs=false;
-                                                       startActivityForResult(intent,2);
-                                                   }else {
-                                                       s.dismiss();
-                                                   }
-                                                   }
+                    intentch=true;
+                    isrs=false;
+                    startActivityForResult(intent,2);
 
-
-                                           }
                 }
-                );
+            }
+        });
+
     }
     private void addDevices(final String packagename, String time){
         db.collection("DEVICES").document(getDeviceId())
@@ -302,31 +373,89 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
             thread.start();
         }
     }
+    public static void receiver(String packename){
+
+
+    }
     private void kiemtra(){
-        SharedPreferences prefs = getSharedPreferences("nhat", MODE_PRIVATE);
-        String packagename = prefs.getString("packagename", "null");
+//        SharedPreferences prefs = getSharedPreferences("nhat", MODE_PRIVATE);
+//        final String packagename = prefs.getString("packagename", "null");
         ///////
         ////////
-        AppsManager appsManager = new AppsManager(this);
-        ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
-        boolean have=false;
-        for (int i = 0; i < applist.size(); i++) {
-            if (applist.get(i).getAppPackage().equals(packagename)) {
-                /**
-                 * Đã cài thành công
-                 */
-                Log.d("testokeokee", packagename);
-                AppInstalled(mAuth, db, packagename);
-                have=true;
-            }
-        }
-        if(have==false){
-            xoapointapplistapp2(-1,packagename);
-        }
-
+//        boolean have=false;
+//        for (int i = 0; i < applist.size(); i++) {
+//            if (applist.get(i).getAppPackage().equals(packagename)) {
+//                /**
+//                 * Đã cài thành công
+//                 */
+//                Log.d("testokeokee", packagename);
+//                AppInstalled(mAuth, db, packagename);
+//                have=true;
+//            }
+//        }
+//        if(have==false){
+        SharedPreferences prefs = getSharedPreferences("nhat", MODE_PRIVATE);
+        final String packagename = prefs.getString("packagename", "null");
+        ///////
         SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
         editor.putString("packagename", "null");
         editor.apply();
+        ////////
+        final AppsManager appsManager = new AppsManager(this);
+            DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                                for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
+                                    ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
+                                    Boolean have =false;
+                                    for (int i = 0; i <applist.size() ; i++) {
+                                        if(
+                                                applist.get(i).getAppPackage().equals(entry.getKey())){
+                                            have=true;
+                                        }
+                                    }
+                                    if(!have){
+                                        if(String.valueOf(entry.getValue()).equals("finished")){
+
+                                        }else if (String.valueOf(entry.getValue()).equals("break")) {
+
+                                        } else if((System.currentTimeMillis()-Long.parseLong(String.valueOf(entry.getValue()))>3600000)){
+                                                xoapointapplistapp2(-1,entry.getKey());
+                                                addDevice(entry.getKey(), "break");
+
+                                        }
+
+                                    }else {
+                                        if(String.valueOf(entry.getValue()).equals("finished")){
+
+                                        }else if (String.valueOf(entry.getValue()).equals("break")) {
+
+                                        }else {
+                                            addDevice(entry.getKey(),"finished");
+                                            addPoint(1);
+                                            addHistory(0,entry.getKey());
+                                        }
+                                    }
+
+                                }
+                        }else {
+                            addDevice(packagename,"finished");
+                            addPoint(1);
+                            addHistory(0,packagename);
+                        }
+                    }
+                    s.dismiss();
+                    s2.dismiss();
+                }
+            });
+
+//        SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
+//        editor.putString("packagename", "null");
+//        editor.apply();
         isclick=false;
     }
     private Task<String> addDevice(String packagename,String time) {
@@ -526,15 +655,18 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                         for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
                             if(entry.getKey().equals(packagename)){
                                 if(String.valueOf(entry.getValue()).equals("finished")){
-                                    xoapointapplistapp2(-1,packagename);
+//                                    xoapointapplistapp2(-1,packagename);
+                                    s.dismiss();
+                                    s2.dismiss();
                                 }else {
-                                if((System.currentTimeMillis()-Long.parseLong(String.valueOf(entry.getValue()))<3600000)){
-                                    addDevice(packagename,"finished");
-                                    addPoint(1);
-                                    addHistory(0,packagename);
-                                }else {
-                                    xoapointapplistapp2(-1,packagename);
-                                }
+                                    if(String.valueOf(entry.getValue()).equals("break")){
+
+//                                    xoapointapplistapp2(1,packagename);
+                                    }else {
+                                        addDevice(packagename,"finished");
+                                        addPoint(1);
+                                        addHistory(0,packagename);
+                                    }
                                 }
                             }
 

@@ -396,6 +396,7 @@ public class LoginActivity extends AppCompatActivity {
                             // muốn lấy thông tin gì là trong get trong này ra nha
                             FirebaseUser user = auth.getCurrentUser();
                             kiemtrakhoitao();
+                            kiemtra();
                             ;
 
 
@@ -436,27 +437,60 @@ public class LoginActivity extends AppCompatActivity {
 
     private void kiemtra() {
         SharedPreferences prefs = getSharedPreferences("nhat", MODE_PRIVATE);
-        String packagename = prefs.getString("packagename", "null");
+        final String packagename = prefs.getString("packagename", "null");
         ///////
         SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
         editor.putString("packagename", "null");
         editor.apply();
         ////////
-        AppsManager appsManager = new AppsManager(this);
-        boolean have=false;
-        ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
-        for (int i = 0; i < applist.size(); i++) {
-            if (applist.get(i).getAppPackage().equals(packagename)) {
-                /**
-                 * Đã cài thành công
-                 */
-                AppInstalled(auth, db, packagename);
-                have=true;
+        final AppsManager appsManager = new AppsManager(this);
+        DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
+                            ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
+                            Boolean have =false;
+                            for (int i = 0; i <applist.size() ; i++) {
+                                if(
+                                applist.get(i).getAppPackage().equals(entry.getKey())){
+                                    have=true;
+                                }
+                            }
+                            if(!have){
+                                if(String.valueOf(entry.getValue()).equals("finished")){
+
+                                }else if (String.valueOf(entry.getValue()).equals("break")) {
+
+                                } else if((System.currentTimeMillis()-Long.parseLong(String.valueOf(entry.getValue()))>3600000)){
+                                    xoapointapplistapp2(-1,entry.getKey());
+                                    addDevice(entry.getKey(), "break");
+                                }
+
+                            }else {
+                                if(String.valueOf(entry.getValue()).equals("finished")){
+
+                                }else if (String.valueOf(entry.getValue()).equals("break")) {
+
+                                }else {
+                                    addDevice(entry.getKey(),"finished");
+                                    addPoint(1);
+                                    addHistory(0,entry.getKey());
+                                }
+                            }
+
+                        }
+                    }else {
+                        addDevice(packagename,"finished");
+                        addPoint(1);
+                        addHistory(0,packagename);
+                    }
+                }
             }
-        }
-        if(have==false){
-            xoapointapplistapp2(-1,packagename);
-        }
+        });
     }
 
     private Task<String> addDevice(String packagename,String time) {
@@ -603,7 +637,8 @@ public class LoginActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
 //                                                   removePointV2(1,packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point),String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),)
 //                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
-                            addHistory(packagename + "/" + documentSnapshot.get("tenapp") + "/" + documentSnapshot.get("tennhaphattrien") + "/" + documentSnapshot.get("time"));
+//                            addH
+//                            addHistory(packagename + "/" + documentSnapshot.get("tenapp") + "/" + documentSnapshot.get("tennhaphattrien") + "/" + documentSnapshot.get("time"));
                             xoapointappuser2(point, packagename, String.valueOf(documentSnapshot.get("userid")), String.valueOf(documentSnapshot.get("linkanh")),String.valueOf(documentSnapshot.get("tenapp")),String.valueOf(documentSnapshot.get("tennhaphattrien")),String.valueOf(Long.parseLong(String.valueOf(documentSnapshot.get("points"))) - point), String.valueOf(documentSnapshot.get("douutien")), String.valueOf(documentSnapshot.get("time")));
                         }
                     }
@@ -714,12 +749,13 @@ public class LoginActivity extends AppCompatActivity {
                                     if(String.valueOf(entry.getValue()).equals("finished")){
                                         xoapointapplistapp2(-1,packagename);
                                     }else {
-                                        if((System.currentTimeMillis()-Long.parseLong(String.valueOf(entry.getValue()))<3600000)){
-                                            addDevice(packagename,"finished");
-                                            addPoint(1);
+                                        if(String.valueOf(entry.getValue()).equals("break")){
+
 //                                    xoapointapplistapp2(1,packagename);
                                         }else {
-                                            xoapointapplistapp2(-1,packagename);
+                                            addDevice(packagename,"finished");
+                                            addPoint(1);
+                                            addHistory(0,packagename);
                                         }
                                     }
                                 }
@@ -809,6 +845,21 @@ public class LoginActivity extends AppCompatActivity {
 //            }
 //        });
 //    }
+private void addHistory(final int point, final String packagename) {
+    db.collection("LISTAPP").document(packagename)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                       @Override
+                                       public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                           if(task.isSuccessful()){
+                                               if (task.getResult().exists()) {
+                                                   addHistory(packagename + "<ict>" + task.getResult().get("tenapp") + "<ict>" + task.getResult().get("tennhaphattrien") + "<ict>" + System.currentTimeMillis()+"<ict>"+task.getResult().get("linkanh"));
+                                               }
+                                           }
+                                       }
+                                   }
+            );
+}
 
     private Task<String> addHistory(String packagename) {
         // Create the arguments to the callable function.
