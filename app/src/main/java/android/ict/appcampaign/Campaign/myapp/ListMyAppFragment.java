@@ -3,6 +3,7 @@ package android.ict.appcampaign.Campaign.myapp;
 import android.annotation.SuppressLint;
 import android.ict.appcampaign.AppItem;
 import android.ict.appcampaign.CONST;
+import android.ict.appcampaign.Campaign.CampaignActivity;
 import android.ict.appcampaign.Campaign.ItemApp;
 import android.ict.appcampaign.Campaign.ListCampaignAdapter;
 import android.ict.appcampaign.Campaign.interfacee.GetKeySearch;
@@ -138,6 +139,8 @@ public class ListMyAppFragment extends Fragment implements GetKeySearch {
                         listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListMyApp, pointUser);
                         recyclerView.setAdapter(listCampaignAdapter);
 //                        ListCampaignAdapter.sLoading.dismiss();
+                        CampaignActivity.s2.dismiss();
+                        CampaignActivity.s.dismiss();
                     }
                 } catch (Exception s) {
 

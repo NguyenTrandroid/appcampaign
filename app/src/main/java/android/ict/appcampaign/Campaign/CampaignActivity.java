@@ -54,11 +54,13 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     TextView tvPointUser;
     private FirebaseFirestore db;
     private FirebaseFunctions mFunctions;
-    SLoading s ;
+     public static SLoading s ;
+    public  static SLoading s2 ;
     Boolean isshow=false;
     GetKeySearch getKeySearch;
     Boolean intentch=false;
     Boolean isrs=false;
+    Boolean isclick=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +69,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
         InitAction();
         InitViewPager();
         s=new SLoading(this);
+        s2=new SLoading(this);
     }
 
     private void InitView() {
@@ -207,9 +210,12 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
 
     @Override
     public void onItemClick(String packagename) {
+        if(!isclick) {
             openChplay(packagename);
+        }
     }
     private void openChplay(final String packagename){
+        isclick=true;
         SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
         editor.putString("packagename", packagename);
         editor.apply();
@@ -283,10 +289,10 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
         if (requestCode == 2) {
             Log.d("tesssss","res");
             isrs=true;
-            if(!isshow){
-            s.show();
-            isshow=true;
-            }
+//            if(!isshow){
+            s2.show();
+//            isshow=true;
+//            }
             Thread thread = new Thread() {
                 @Override
                 public void run() {
@@ -321,6 +327,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
         SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
         editor.putString("packagename", "null");
         editor.apply();
+        isclick=false;
     }
     private Task<String> addDevice(String packagename,String time) {
         // Create the arguments to the callable function.
@@ -360,6 +367,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
                         s.dismiss();
+                        s2.dismiss();
                         // This continuation runs on either success or failure, but if the task
                         // has failed then getResult() will throw an Exception which will be
                         // propagated down.
@@ -415,7 +423,6 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                if(task.isSuccessful()){
                                                if (task.getResult().exists()) {
-                                                   s.dismiss();
                                                    for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
                                                        if ("listadd".equals(entry.getKey())) {
                                                            Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
@@ -466,7 +473,6 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                         // This continuation runs on either success or failure, but if the task
                         // has failed then getResult() will throw an Exception which will be
                         // propagated down.
-                        s.dismiss();
                         String result = (String) task.getResult().getData();
                         Log.d("teststring",result );
                         return result;
