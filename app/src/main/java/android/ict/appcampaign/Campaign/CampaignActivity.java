@@ -55,7 +55,10 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     private FirebaseFirestore db;
     private FirebaseFunctions mFunctions;
     SLoading s ;
+    Boolean isshow=false;
     GetKeySearch getKeySearch;
+    Boolean intentch=false;
+    Boolean isrs=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -229,6 +232,8 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
 //                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
 //
 //                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
+                                                       intentch=true;
+                                                       isrs=false;
                                                        startActivityForResult(intent,2);
                                                    }else {
                                                        s.dismiss();
@@ -276,13 +281,18 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
+            Log.d("tesssss","res");
+            isrs=true;
+            if(!isshow){
+            s.show();
+            isshow=true;
+            }
             Thread thread = new Thread() {
                 @Override
                 public void run() {
                     kiemtra();
                 }
             };
-
             thread.start();
         }
     }
@@ -324,6 +334,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+
                         // This continuation runs on either success or failure, but if the task
                         // has failed then getResult() will throw an Exception which will be
                         // propagated down.
@@ -348,6 +359,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        s.dismiss();
                         // This continuation runs on either success or failure, but if the task
                         // has failed then getResult() will throw an Exception which will be
                         // propagated down.
@@ -359,17 +371,22 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     }
 
     private void xoapointapplistapp2(final int point, final String packagename) {
+        Log.d("sdssdasdas", "xoapointapplistapp2: ");
         db.collection("LISTAPP").document(packagename)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                            @Override
                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                               if(task.isSuccessful()){
                                                if (task.getResult().exists()) {
 
 //                                                   removePointV2(1,packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point),String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),)
 //                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
                                                    addHistory(packagename + "/" + task.getResult().get("tenapp") + "/" + task.getResult().get("tennhaphattrien") + "/" + task.getResult().get("time"));
                                                    xoapointappuser2(point, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
+                                               }}else {
+                                                   isshow=false;
+                                                   s.dismiss();
                                                }
                                            }
                                        }
@@ -382,6 +399,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                            @Override
                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                               if(task.isSuccessful()){
                                                if (task.getResult().exists()) {
                                                    s.dismiss();
                                                    for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
@@ -399,6 +417,8 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                                        }
 
                                                    }
+                                               }}else {
+                                                   s.dismiss();
                                                }
                                            }
 
@@ -429,10 +449,10 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-
                         // This continuation runs on either success or failure, but if the task
                         // has failed then getResult() will throw an Exception which will be
                         // propagated down.
+                        s.dismiss();
                         String result = (String) task.getResult().getData();
                         Log.d("teststring",result );
                         return result;
@@ -444,14 +464,22 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     @Override
     protected void onResume() {
         super.onResume();
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                kiemtra();
+        if(intentch&&!isrs) {
+            Log.d("tesssss","rs");
+            intentch=false;
+            if(isshow=false){
+            s.show();
+            isshow=true;
             }
-        };
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    kiemtra();
+                }
+            };
 
-        thread.start();
+            thread.start();
+        }
     }
 
     private void AppInstalled(final FirebaseAuth mAuth, final FirebaseFirestore db, final String packagename) {
@@ -482,8 +510,6 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                         }
                         }
                     }
-                } else {
-//                    Log.d(TAG, "get failed with ", task.getException());
                 }
             }
         });

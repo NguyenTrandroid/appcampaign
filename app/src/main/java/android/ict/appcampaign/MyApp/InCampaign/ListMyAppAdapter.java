@@ -71,6 +71,7 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         mFunctions = FirebaseFunctions.getInstance();
+        sLoading = new SLoading(context);
 
     }
 
@@ -214,8 +215,7 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                 btOption.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        sLoading = new SLoading(context);
+                        dialogOption.cancel();
                         sLoading.show();
                         if (sbPointOption.getProgress() != 0) {
                             viewHolder.ivCampaign.setClickable(false);
@@ -314,7 +314,7 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                 btRemove.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sLoading = new SLoading(context);
+                        dialogRemoveApp.cancel();
                         sLoading.show();
                         db.collection("USER").document(mAuth.getUid())
                                 .get()
@@ -386,9 +386,15 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-
-                        if (dialogOption != null) {
-                            dialogOption.cancel();
+                        if(task.isSuccessful()){
+                            sLoading.dismiss();
+//                            dialogRemoveApp.cancel();
+//                            dialogOption.cancel();
+                        }else {
+                            sLoading.dismiss();
+//                            dialogRemoveApp.cancel();
+//                            dialogOption.cancel();
+                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show();
                         }
 
                         String result = (String) task.getResult().getData();
@@ -422,16 +428,16 @@ public class ListMyAppAdapter extends RecyclerView.Adapter<ListMyAppAdapter.View
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-
-                        if(dialogRemoveApp!=null)
-                        {
-                            dialogRemoveApp.cancel();
+                        if(task.isSuccessful()){
+                            sLoading.dismiss();
+//                            dialogRemoveApp.cancel();
+//                            dialogOption.cancel();
+                        }else {
+                            sLoading.dismiss();
+//                            dialogRemoveApp.cancel();
+//                            dialogOption.cancel();
+                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show();
                         }
-                        if(dialogOption!=null)
-                        {
-                            dialogOption.cancel();
-                        }
-
                         String result = (String) task.getResult().getData();
                         Log.d("teststring", result);
                         return result;

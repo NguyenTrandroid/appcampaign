@@ -71,6 +71,7 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
         dialogAddPoint=new Dialog(context);
         dialogOption=new Dialog(context);
         dialogRemoveApp=new Dialog(context);
+        sLoading = new SLoading(context);
     }
 
     @NonNull
@@ -97,6 +98,16 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
             viewHolder.tvPointApp.setTextColor(Color.parseColor("#ffffff"));
             viewHolder.ivThunder.setImageResource(R.drawable.ic_thunder);
         }
+        viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!appItem.getUserid().equals(mAuth.getUid())) {
+//                    sLoading.show();
+                    viewHolder.cardView.setClickable(false);
+                    onItemClick.onItemClick(appItem.getPackageName());
+                }
+            }
+        });
         viewHolder.tvNameApp.setText(appItem.getTenApp());
         viewHolder.tvDeveloper.setText(appItem.getNhaPhatTrien());
         viewHolder.tvPointApp.setText(appItem.getDiem() + "");
@@ -206,40 +217,40 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
                 btOption.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        sLoading = new SLoading(context);
+                        dialogOption.cancel();
                         sLoading.show();
                         if (sbPointOption.getProgress() != 0) {
                             viewHolder.ivCampaign.setClickable(false);
                             viewHolder.cardView.setClickable(false);
                             db.collection("USER").document(mAuth.getUid())
                                     .get()
+
                                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                                @Override
                                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                                   if (task.getResult().exists()) {
-                                                                       for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                                                           if ("listadd".equals(entry.getKey())) {
-                                                                               Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
-                                                                               for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
-                                                                                   if (entryNested.getKey().equals(appItem.getPackageName())) {
-                                                                                       AppItem appItem = new AppItem();
-                                                                                       appItem.setPackageName(entryNested.getKey());
-                                                                                       Map<String, String> allData = (Map<String, String>) entryNested.getValue();
-                                                                                       if (task.getResult().exists()) {
-                                                                                           if(getPositionTab==0)
-                                                                                           {
-                                                                                               addPointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) + sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
+                                                                   if (task.isSuccessful()) {
+                                                                       if (task.getResult().exists()) {
+                                                                           for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
+                                                                               if ("listadd".equals(entry.getKey())) {
+                                                                                   Map<String, Object> nestedData = (Map<String, Object>) entry.getValue();
+                                                                                   for (Map.Entry<String, Object> entryNested : nestedData.entrySet()) {
+                                                                                       if (entryNested.getKey().equals(appItem.getPackageName())) {
+                                                                                           AppItem appItem = new AppItem();
+                                                                                           appItem.setPackageName(entryNested.getKey());
+                                                                                           Map<String, String> allData = (Map<String, String>) entryNested.getValue();
+                                                                                           if (task.getResult().exists()) {
+                                                                                               if (getPositionTab == 0) {
+                                                                                                   addPointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) + sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
+                                                                                               } else {
+                                                                                                   removePointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) - sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
+                                                                                               }
                                                                                            }
-                                                                                           else
-                                                                                           {
-                                                                                               removePointV2(sbPointOption.getProgress(), appItem.getPackageName(), String.valueOf(Integer.parseInt(allData.get("points")) - sbPointOption.getProgress()), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
-                                                                                           }
+
                                                                                        }
                                                                                    }
                                                                                }
-                                                                           }
 
+                                                                           }
                                                                        }
                                                                    }
                                                                }
@@ -306,13 +317,14 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
                 btRemove.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sLoading = new SLoading(context);
+                        dialogRemoveApp.cancel();
                         sLoading.show();
                         db.collection("USER").document(mAuth.getUid())
                                 .get()
                                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                            @Override
                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                               Boolean exist=false;
                                                                if (task.getResult().exists()) {
                                                                    for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
                                                                        if ("listadd".equals(entry.getKey())) {
@@ -325,7 +337,14 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
                                                                                    if (task.getResult().exists()) {
                                                                                        removePointV2(Integer.parseInt(allData.get("points")), appItem.getPackageName(), "0", allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"), "", "", "", "");
                                                                                    }
+                                                                                   exist=true;
                                                                                }
+                                                                           }
+                                                                           if(!exist){
+                                                                                   Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                                                                                   sLoading.dismiss();
+                                                                                   dialogRemoveApp.cancel();
+
                                                                            }
                                                                        }
 
@@ -376,25 +395,31 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
         data.put("admindouutien", "a");
         data.put("admintime", "a");
         data.put("adminuserid", "a");
+        Log.d("testsadsada", "onComplete3: ");
         return mFunctions
                 .getHttpsCallable("removePointv2")
                 .call(data)
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-
-                        if(sLoading!=null)
-                        {
+                         if(task.isSuccessful()){
                             sLoading.dismiss();
-                        }
-                        if(dialogRemoveApp!=null)
-                        {
-                            dialogRemoveApp.cancel();
-                        }
-                        if(dialogOption!=null)
-                        {
-                            dialogOption.cancel();
-                        }
+                        }else {
+                             sLoading.dismiss();
+                             Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                         }
+//                        if(sLoading!=null)
+//                        {
+//                            sLoading.dismiss();
+//                        }
+//                        if(dialogRemoveApp!=null)
+//                        {
+//                            dialogRemoveApp.cancel();
+//                        }
+//                        if(dialogOption!=null)
+//                        {
+//                            dialogOption.cancel();
+//                        }
 
                         String result = (String) task.getResult().getData();
                         Log.d("teststring", result);
@@ -426,13 +451,11 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-
-                        if (dialogOption != null) {
-                            dialogOption.cancel();
-                        }
-                        if(sLoading!=null)
-                        {
+                        if(task.isSuccessful()){
                             sLoading.dismiss();
+                        }else {
+                            sLoading.dismiss();
+                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show();
                         }
 
                         String result = (String) task.getResult().getData();

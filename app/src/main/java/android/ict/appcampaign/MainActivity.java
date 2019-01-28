@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private void kiemtrataikhoan() {
         DocumentReference reference = db.collection("USER").document(auth.getUid());
         reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {

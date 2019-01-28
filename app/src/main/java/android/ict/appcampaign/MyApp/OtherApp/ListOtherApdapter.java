@@ -63,6 +63,7 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
         mAuth = FirebaseAuth.getInstance();
         mFunctions = FirebaseFunctions.getInstance();
         dialogAddPoint=new Dialog(context);
+        sLoading = new SLoading(context);
 
     }
 
@@ -158,7 +159,7 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                 btAddPoint.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sLoading = new SLoading(context);
+                        dialogAddPoint.cancel();
                         sLoading.show();
                         if (sbAddPoint.getProgress() != 0) {
                             db.collection("USER").document(mAuth.getUid())
@@ -227,10 +228,13 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-
-                        if(dialogAddPoint!=null)
-                        {
+                        if(task.isSuccessful()){
+                            sLoading.dismiss();
                             dialogAddPoint.cancel();
+                        }else {
+                            sLoading.dismiss();
+                            dialogAddPoint.cancel();
+                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show();
                         }
                         String result = (String) task.getResult().getData();
                         Log.d("teststring", result);

@@ -42,6 +42,7 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -79,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseFunctions mFunctions;
     private UniqueDevice uniqueDevice;
     Permissionruntime permissionruntime;
+    Boolean checkconnection=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void kiemtrakhoitao() {
-        SLoading s = new SLoading(this);
+        final SLoading s = new SLoading(this);
         s.show();
         db.collection("USER").document(auth.getUid())
                 .get().addOnFailureListener(new OnFailureListener() {
@@ -169,6 +171,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                            @Override
                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                               s.dismiss();
                                                if (task.getResult().exists()) {
                                                    ArrayList<String> devices = (ArrayList<String>) task.getResult().get("devices");
                                                    if (devices != null) {
@@ -306,7 +309,7 @@ public class LoginActivity extends AppCompatActivity {
                 translateAnimation.setFillAfter(true);
                 rlSplashScreen.startAnimation(translateAnimation);
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                if (isLoggedIn()) {
+                if (isLoggedIn()&&checkconnection) {
                     kiemtra();
                     // kiemtrataikhoan();
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -332,6 +335,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void LoginFacebook() {
+        LoginManager.getInstance().logOut();
         rlLogin.setVisibility(View.VISIBLE); //Ngược lại, hiện rl chứa cardview "Set up with FACEBOOK"
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -349,7 +353,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException error) {
-                Log.d("nhat", error.toString());
+                Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
                 cvLogin.setVisibility(View.VISIBLE);
 
             }
@@ -585,19 +589,27 @@ public class LoginActivity extends AppCompatActivity {
     private void xoapointapplistapp2(final int point, final String packagename) {
         db.collection("LISTAPP").document(packagename)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                           @Override
-                                           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                               if (task.getResult().exists()) {
-
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                        LoginManager.getInstance().logOut();
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        checkconnection=true;
+                        if (documentSnapshot.exists()) {
 //                                                   removePointV2(1,packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point),String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),)
 //                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
-                                                   addHistory(packagename + "/" + task.getResult().get("tenapp") + "/" + task.getResult().get("tennhaphattrien") + "/" + task.getResult().get("time"));
-                                                   xoapointappuser2(point, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
-                                               }
-                                           }
-                                       }
-                );
+                            addHistory(packagename + "/" + documentSnapshot.get("tenapp") + "/" + documentSnapshot.get("tennhaphattrien") + "/" + documentSnapshot.get("time"));
+                            xoapointappuser2(point, packagename, String.valueOf(documentSnapshot.get("userid")), String.valueOf(documentSnapshot.get("linkanh")),String.valueOf(documentSnapshot.get("tenapp")),String.valueOf(documentSnapshot.get("tennhaphattrien")),String.valueOf(Long.parseLong(String.valueOf(documentSnapshot.get("points"))) - point), String.valueOf(documentSnapshot.get("douutien")), String.valueOf(documentSnapshot.get("time")));
+                        }
+                    }
+                });
+
+
     }
 
     private Task<String> addApplication(String packagename, String points, String linkanh, String tenapp, String tennhaphattrien) {
@@ -693,6 +705,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
+                    checkconnection=true;
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         if(task.getResult().getData().containsKey(packagename)){
@@ -715,7 +728,9 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 } else {
+                    Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
 //                    Log.d(TAG, "get failed with ", task.getException());
+                    LoginManager.getInstance().logOut();
                 }
             }
         });

@@ -137,6 +137,7 @@ public class ListMyAppFragment extends Fragment implements GetKeySearch {
                         }
                         listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListMyApp, pointUser);
                         recyclerView.setAdapter(listCampaignAdapter);
+//                        ListCampaignAdapter.sLoading.dismiss();
                     }
                 } catch (Exception s) {
 
