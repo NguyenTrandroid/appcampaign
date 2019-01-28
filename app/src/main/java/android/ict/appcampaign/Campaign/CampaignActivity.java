@@ -377,7 +377,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                if(task.isSuccessful()){
                                                    if (task.getResult().exists()) {
-                                                       addHistory(packagename + "<ict>" + task.getResult().get("tenapp") + "<ict>" + task.getResult().get("tennhaphattrien") + "<ict>" + task.getResult().get("time")+"<ict>"+task.getResult().get("linkanh"));
+                                                       addHistory(packagename + "<ict>" + task.getResult().get("tenapp") + "<ict>" + task.getResult().get("tennhaphattrien") + "<ict>" + System.currentTimeMillis()+"<ict>"+task.getResult().get("linkanh"));
                                                    }
                                                }
                                            }
