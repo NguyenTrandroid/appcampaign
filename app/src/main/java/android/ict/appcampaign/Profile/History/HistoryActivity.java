@@ -108,9 +108,6 @@ public class HistoryActivity extends AppCompatActivity {
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        // This continuation runs on either success or failure, but if the task
-                        // has failed then getResult() will throw an Exception which will be
-                        // propagated down.
                         String result = (String) task.getResult().getData();
                         Log.d("teststring", result);
                         return result;
@@ -152,11 +149,12 @@ public class HistoryActivity extends AppCompatActivity {
         final DocumentReference reference = db.collection("LISTHISTORY").document(deviceID);
         final ArrayList<HistoryItem> listApp = new ArrayList<>();
         final ArrayList<HistoryItem> arrayTemp = new ArrayList<>();
-        listApp.clear();
+
         listenerRegistration = reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
 
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                listApp.clear();
                 try {
                     if (e != null) {
                         Log.w("AAA", "Listen failed.", e);
@@ -165,47 +163,52 @@ public class HistoryActivity extends AppCompatActivity {
                     String source = documentSnapshot != null && documentSnapshot.getMetadata().hasPendingWrites()
                             ? "Local" : "Server";
                     if (documentSnapshot != null && documentSnapshot.exists()) {
+
                         ArrayList<String> listInfo = (ArrayList<String>) documentSnapshot.get("packagename");
                         for (int i = 0; i < listInfo.size(); i++) {
-                            String[] str = listInfo.get(i).split("/");
-                            if (!isExistedFileOnApp(str[0])) {
-                                DownloadOnCloudStorage(str[0]);
-                            }
-                            listApp.add(new HistoryItem(str[0], str[1], str[2], str[3]));
+                            HistoryItem historyItem = new HistoryItem();
+                            String[] str = listInfo.get(i).split("<ict>");
+                            historyItem.setPackagename(str[0]);
+                            historyItem.setNameApp(str[1]);
+                            historyItem.setDevelper(str[2]);
+                            historyItem.setTime(str[3]);
+                            historyItem.setImg(str[4]);
+                            listApp.add(historyItem);
                         }
+
                         final ListHistoryAdapter historyAdapter = new ListHistoryAdapter(HistoryActivity.this, listApp);
                         GridLayoutManager layoutManager = new GridLayoutManager(HistoryActivity.this, 1);
                         rvListHistory.setLayoutManager(layoutManager);
                         rvListHistory.setItemAnimator(new DefaultItemAnimator());
                         rvListHistory.setAdapter(historyAdapter);
                         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                                @Override
-                                public boolean onQueryTextSubmit(String s) {
+                            @Override
+                            public boolean onQueryTextSubmit(String s) {
 
-                                    return false;
-                                }
+                                return false;
+                            }
 
-                                @Override
-                                public boolean onQueryTextChange(String s) {
-                                    arrayTemp.clear();
-                                    if (s.length() == 0) {
-                                        arrayTemp.addAll(listApp);
-                                    } else {
-                                        for (HistoryItem historyItem : listApp) {
-                                            try {
-                                                if (historyItem.getNameApp().toLowerCase().substring(0, s.length()).contains(s.toLowerCase())) {
-                                                    arrayTemp.add(historyItem);
-                                                }
-                                            }   catch (Exception e){
-
+                            @Override
+                            public boolean onQueryTextChange(String s) {
+                                arrayTemp.clear();
+                                if (s.length() == 0) {
+                                    arrayTemp.addAll(listApp);
+                                } else {
+                                    for (HistoryItem historyItem : listApp) {
+                                        try {
+                                            if (historyItem.getNameApp().toLowerCase().substring(0, s.length()).contains(s.toLowerCase())) {
+                                                arrayTemp.add(historyItem);
                                             }
+                                        } catch (Exception e) {
+
                                         }
                                     }
-                                    ListHistoryAdapter listHistoryAdapter = new ListHistoryAdapter(HistoryActivity.this, arrayTemp);
-                                    rvListHistory.setAdapter(listHistoryAdapter);
-                                    historyAdapter.notifyDataSetChanged();
-                                    return false;
                                 }
+                                ListHistoryAdapter listHistoryAdapter = new ListHistoryAdapter(HistoryActivity.this, arrayTemp);
+                                rvListHistory.setAdapter(listHistoryAdapter);
+                                historyAdapter.notifyDataSetChanged();
+                                return false;
+                            }
                         });
 
 
@@ -219,35 +222,6 @@ public class HistoryActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    private void DownloadOnCloudStorage(final String packageName) {
-        final String fileName = packageName + ".webp";
-        StorageReference downloadRef = storageReference.child(fileName);
-        final File fileNameOnDevice = new File(Environment.getExternalStoragePublicDirectory(DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-        downloadRef.getFile(fileNameOnDevice).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                Log.d("DOCCC", "completed");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-
-            }
-        });
-    }
-
-    private boolean isExistedFileOnApp(String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory
-                (DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-        if (file.exists()) {
-            Log.d("DOCCC", "exist");
-            return true;
-        } else {
-            DirectoryHelper.createDirectory(this);
-        }
-        return false;
     }
 
     private void InitAction() {

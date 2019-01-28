@@ -33,7 +33,7 @@ public class ListHistoryAdapter extends RecyclerView.Adapter<ListHistoryAdapter.
     @Override
     public ListHistoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View view = layoutInflater.inflate(R.layout.layout_history,viewGroup,false);
+        View view = layoutInflater.inflate(R.layout.layout_history, viewGroup, false);
         return new ListHistoryAdapter.ViewHolder(view);
     }
 
@@ -45,17 +45,13 @@ public class ListHistoryAdapter extends RecyclerView.Adapter<ListHistoryAdapter.
         Long time = Long.valueOf(historyItem.getTime());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE dd-MM-yyyy ");
         String ngaythang = simpleDateFormat.format(time);
-        viewHolder.tvTime.setText(ngaythang );
-        String fileName = historyItem.getPackagename()+".webp";
-        File fileNameOnDevice = new File(Environment.getExternalStoragePublicDirectory
-                (DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-        Log.d("AAA",fileNameOnDevice+"");
-        Glide.with(context).load(fileNameOnDevice).into(viewHolder.ivAvatarApp);
+        viewHolder.tvTime.setText(ngaythang);
+        Glide.with(context).load(historyItem.getImg()).into(viewHolder.ivAvatarApp);
     }
 
     @Override
     public int getItemCount() {
-        return listHistory.size()   ;
+        return listHistory.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
