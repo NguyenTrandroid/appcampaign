@@ -73,7 +73,7 @@ public class HistoryActivity extends AppCompatActivity {
         InitView();
         Intent intent = getIntent();
         tvPointUser.setText(intent.getStringExtra("points"));
-        getAppHistory("05c839c1fe6d6d8bad091603582ae2b9cb");
+        getAppHistory(getDeviceId());
         InitAction();
 
     }
