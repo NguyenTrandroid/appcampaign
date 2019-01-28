@@ -111,7 +111,7 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
             public void onClick(View view) {
                 if(!appItem.getUserid().equals(mAuth.getUid())) {
 //                    sLoading.show();
-                    viewHolder.cardView.setClickable(false);
+//                    viewHolder.cardView.setClickable(false);
                     onItemClick.onItemClick(appItem.getPackageName());
                 }
             }

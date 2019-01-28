@@ -366,8 +366,14 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        s.dismiss();
-                        s2.dismiss();
+                        if(!task.isSuccessful()){
+                            Toast.makeText(CampaignActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                            s.dismiss();
+                            s2.dismiss();
+                        }else {
+                            s.dismiss();
+                            s2.dismiss();
+                        }
                         // This continuation runs on either success or failure, but if the task
                         // has failed then getResult() will throw an Exception which will be
                         // propagated down.
@@ -473,6 +479,11 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                         // This continuation runs on either success or failure, but if the task
                         // has failed then getResult() will throw an Exception which will be
                         // propagated down.
+                        if(!task.isSuccessful()){
+                            Toast.makeText(CampaignActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                            s.dismiss();
+                            s2.dismiss();
+                        }
                         String result = (String) task.getResult().getData();
                         Log.d("teststring",result );
                         return result;
