@@ -196,7 +196,7 @@ public class HistoryActivity extends AppCompatActivity {
                                 } else {
                                     for (HistoryItem historyItem : listApp) {
                                         try {
-                                            if (historyItem.getNameApp().toLowerCase().substring(0, s.length()).contains(s.toLowerCase())) {
+                                            if (historyItem.getNameApp().toLowerCase().contains(s.toLowerCase())) {
                                                 arrayTemp.add(historyItem);
                                             }
                                         } catch (Exception e) {

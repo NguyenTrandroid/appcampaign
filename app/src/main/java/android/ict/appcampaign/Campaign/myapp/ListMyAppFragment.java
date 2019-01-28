@@ -167,7 +167,7 @@ public class ListMyAppFragment extends Fragment implements GetKeySearch {
             } else {
                 for (ItemApp appItem : appArrayList) {
                     try {
-                        if (appItem.getTenApp().toLowerCase().substring(0, keySearch.length()).contains(keySearch.toLowerCase())) {
+                        if (appItem.getTenApp().toLowerCase().contains(keySearch.toLowerCase())) {
                             listTemp.add(appItem);
                         }
                     }   catch (Exception e){
