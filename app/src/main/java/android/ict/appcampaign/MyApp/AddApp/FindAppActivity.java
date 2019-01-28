@@ -83,10 +83,7 @@ public class FindAppActivity extends AppCompatActivity {
     AVLoadingIndicatorView avLoading;
     ImageView ivBack;
     List<String> listGetInfoApp;
-    Uri uri_file;
     TextView tvStatusGetInfo;
-    StorageReference storageReference;
-    private static final int WRITE_EXTERNAL_STORAGE_REQUEST_CODE = 123;
     private FirebaseFunctions mFunctions;
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -97,7 +94,6 @@ public class FindAppActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_app);
 
-        storageReference = FirebaseStorage.getInstance().getReference();
         db = FirebaseFirestore.getInstance();
         mFunctions = FirebaseFunctions.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -217,9 +213,8 @@ public class FindAppActivity extends AppCompatActivity {
                                 addApplication(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3));
                                 addListAdmin(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3), "1", String.valueOf(System.currentTimeMillis()), mAuth.getUid(),true);
                             } else {
-                                StartDownloadAndUp(listGetInfoApp.get(1), listGetInfoApp.get(0));
                                 addApplication(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3));
-                                addListAdmin(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3), "1", String.valueOf(System.currentTimeMillis()), mAuth.getUid(),false);
+                                addListAdmin(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3), "1", String.valueOf(System.currentTimeMillis()), mAuth.getUid(),true);
                             }}    } else {
 
                         }
@@ -287,60 +282,6 @@ public class FindAppActivity extends AppCompatActivity {
                 btFind.setEnabled(true);
             }
         }
-    }
-
-    private void StartDownloadAndUp(String pathDownload, final String fileName) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ActivityCompat.requestPermissions(
-                    FindAppActivity.this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    WRITE_EXTERNAL_STORAGE_REQUEST_CODE
-            );
-        }
-        DirectoryHelper.createDirectory(FindAppActivity.this);
-
-        startService(DownloadFileService.getDownloadService(
-                FindAppActivity.this, pathDownload,
-                DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/"), fileName));
-
-        BroadcastReceiver onComplete = new BroadcastReceiver() {
-            public void onReceive(Context ctxt, Intent intent) {
-                Log.d("DDDDDDD", "StartDownload");
-                File file = new File(Environment.getExternalStoragePublicDirectory(DirectoryHelper.ROOT_DIRECTORY_NAME.concat("/")), fileName);
-                if (file.exists()) {
-                    Log.d("DDDDDDD", "Downloaded");
-
-                    uri_file = Uri.fromFile(file);
-                    String fileOnStorage = fileName + ".webp";
-                    storageReference.child(fileOnStorage).getDownloadUrl().addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            StorageReference riversRef = storageReference.child(fileName);
-
-                            riversRef.putFile(uri_file)
-                                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                        @Override
-                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                            //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                                            Log.d("DDDDDDD", "UpCloudStorage");
-                                            sLoading.dismiss();
-                                           onBackPressed();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception exception) {
-                                            // Handle unsuccessful uploads
-                                            sLoading.dismiss();
-                                            onBackPressed();
-                                        }
-                                    });
-                        }
-                    });
-                }
-            }
-        };
-        registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     private Task<String> addApplication(String packagename, String points, String linkanh, String tenapp, String tennhaphattrien) {

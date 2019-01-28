@@ -48,7 +48,6 @@ public class ListMyAppFragment extends Fragment implements GetKeySearchListener 
     FirebaseFirestore db;
     List<AppItem> listOtherApps;
     List<AppItem> listInCampaign;
-    StorageReference storageReference;
     GetPointUserListener getPointUserListener;
     private FirebaseAuth mAuth;
     String pointUser;
@@ -72,7 +71,6 @@ public class ListMyAppFragment extends Fragment implements GetKeySearchListener 
         getPointUserListener = (GetPointUserListener) getContext();
         db = FirebaseFirestore.getInstance();
 
-        storageReference = FirebaseStorage.getInstance().getReference();
         view = inflater.inflate(R.layout.fragment_my_app, container, false);
 
         InitView();

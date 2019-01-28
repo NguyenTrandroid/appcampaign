@@ -45,7 +45,6 @@ public class ListOtherAppFragment extends Fragment implements GetKeySearchListen
     RecyclerView rvListMyApp;
     FirebaseFirestore db;
     List<AppItem> listOtherApps;
-    StorageReference storageReference;
     GetPointUserListener getPointUserListener;
     private FirebaseAuth mAuth;
     String pointUser;
@@ -66,7 +65,6 @@ public class ListOtherAppFragment extends Fragment implements GetKeySearchListen
         getPointUserListener = (GetPointUserListener) getContext();
         db = FirebaseFirestore.getInstance();
 
-        storageReference = FirebaseStorage.getInstance().getReference();
         view = inflater.inflate(R.layout.fragment_my_app, container, false);
 
         InitView();
