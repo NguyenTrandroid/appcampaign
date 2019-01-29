@@ -131,8 +131,8 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                         Collections.sort(appArrayListAllApp, new Comparator<ItemApp>() {
                             @Override
                             public int compare(ItemApp itemApp, ItemApp t1) {
-                                Integer a =itemApp.getDoUuTien();
-                                Integer b =t1.getDoUuTien();
+                                Integer b =itemApp.getDoUuTien();
+                                Integer a =t1.getDoUuTien();
                                 int sizeCmp =a.compareTo(b);
                                 if (sizeCmp != 0) {
                                     return sizeCmp;
