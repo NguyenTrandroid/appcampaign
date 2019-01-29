@@ -1,6 +1,7 @@
 package android.ict.appcampaign.MyApp.AddApp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -25,11 +26,14 @@ import android.os.Bundle;
 import android.ict.appcampaign.R;
 import android.support.v7.widget.CardView;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -153,6 +157,16 @@ public class FindAppActivity extends AppCompatActivity {
         ivBack = findViewById(R.id.iv_back);
         tvStatusGetInfo = findViewById(R.id.tv_statusGetInfo);
     }
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
     private void InitAction()
     {
         ivBack.setOnClickListener(new View.OnClickListener() {
@@ -182,6 +196,7 @@ public class FindAppActivity extends AppCompatActivity {
         btFind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hideKeyboard(FindAppActivity.this);
                 if (!edInput.getText().toString().isEmpty()) {
                     avLoading.setVisibility(View.VISIBLE);
                     avLoading.show();

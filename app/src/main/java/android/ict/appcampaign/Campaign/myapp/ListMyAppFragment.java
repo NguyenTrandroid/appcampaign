@@ -131,7 +131,7 @@ public class ListMyAppFragment extends Fragment implements GetKeySearch {
                         }
                         appArrayList = appArrayListMyApp;
                         Collections.sort(appArrayListMyApp, new FishNameComparator());
-                        for (int i = 0; i < appArrayListMyApp.size() - 1; i++) {
+                        for (int i = 0; i < appArrayListMyApp.size()-1; i++) {
                             if (appArrayListMyApp.get(i).getDoUuTien() == appArrayListMyApp.get(i + 1).getDoUuTien() && appArrayListMyApp.get(i).getTime() < appArrayListMyApp.get(i + 1).getTime()) {
                                 swap(appArrayListMyApp.get(i), appArrayListMyApp.get(i + 1));
                             }
