@@ -1,5 +1,6 @@
 package android.ict.appcampaign.Campaign;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.ict.appcampaign.AppItem;
@@ -23,6 +24,7 @@ import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +64,8 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     Boolean isrs=false;
     Boolean isclick=false;
     public static boolean onRecei=false;
+    Dialog dialogInstalled;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -233,7 +237,16 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                             for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
                                 if (entry.getKey().equals(packagename)) {
                                     if (String.valueOf(entry.getValue()).equals("finished")) {
-
+                                        dialogInstalled = new Dialog(CampaignActivity.this);
+                                        dialogInstalled.setContentView(R.layout.dialog_installed);
+                                        Button btOK = dialogInstalled.findViewById(R.id.bt_OK);
+                                        dialogInstalled.show();
+                                        btOK.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                dialogInstalled.cancel();
+                                            }
+                                        });
                                     } else if(String.valueOf(entry.getValue()).equals("break")){ db.collection("LISTAPP").document(packagename)
                                             .get()
                                             .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
