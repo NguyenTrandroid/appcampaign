@@ -30,4 +30,12 @@
     <string name="plus">CỘNG</string>
     <string name="minus">TRỪ</string>
     <string name="clearHistory">XÓA LỊCH SỬ TẢI? </string>
+    <string name="packagenamealreadyexists">Package name này đã tồn tại</string>
+    <string name="PackagenamedoesntexistonCHPlay">Package name không tồn tại trên CH Play</string>
+    <string name="GetdataisfailedPleasetryagain">Lấy dữ liệu thất bại. Vui lòng thử lại</string>
+    <string name="Checkyourinternetconnection">Kiểm tra lại kết nối internet của bạn</string>
+    <string name="thisappnopoints">Ứng dụng này đã từng được cài đặt. Cài đặt sẽ không được cộng điểm</string>
+
+
+
 </resources>

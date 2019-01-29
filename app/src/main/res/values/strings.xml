@@ -32,6 +32,11 @@
     <string name="plus">PLUS</string>
     <string name="minus">MINUS</string>
     <string name="clearHistory">DO YOU WANT TO CLEAR HISTORY? </string>
+    <string name="packagenamealreadyexists">This package name already exists</string>
+    <string name="PackagenamedoesntexistonCHPlay">Package name does not exist on CH Play </string>
+    <string name="GetdataisfailedPleasetryagain">Get data is failed. Please try again</string>
+    <string name="Checkyourinternetconnection">Check your internet connection</string>
+    <string name="thisappnopoints">This application has been installed. Installation will not earn points </string>
 
 
 </resources>
