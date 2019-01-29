@@ -34,32 +34,33 @@ public class MyReceiver extends BroadcastReceiver {
  
 @Override
 public void onReceive(Context context, Intent intent) {
-    CampaignActivity.onRecei=true;
-    mFunctions = FirebaseFunctions.getInstance();
-    db = FirebaseFirestore.getInstance();
-    mAuth=FirebaseAuth.getInstance();
-    this.context = context;
-    if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED")) {
-        if(mAuth.getUid()!=null) {
-            final String packageName = intent.getData().getEncodedSchemeSpecificPart();
-            final AppsManager appsManager = new AppsManager(context);
-            DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
-                                Boolean have = false;
-                                for (int i = 0; i < applist.size(); i++) {
-                                    if (
-                                            applist.get(i).getAppPackage().equals(entry.getKey())) {
-                                        have = true;
+    if(!CampaignActivity.onRecei) {
+        CampaignActivity.onRecei=true;
+        mFunctions = FirebaseFunctions.getInstance();
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        this.context = context;
+        if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED")) {
+            if (mAuth.getUid() != null) {
+                final String packageName = intent.getData().getEncodedSchemeSpecificPart();
+                final AppsManager appsManager = new AppsManager(context);
+                DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
+                                    ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
+                                    Boolean have = false;
+                                    for (int i = 0; i < applist.size(); i++) {
+                                        if (
+                                                applist.get(i).getAppPackage().equals(entry.getKey())) {
+                                            have = true;
+                                        }
                                     }
-                                }
-                                if (!have) {
+                                    if (!have) {
 //                             if(String.valueOf(entry.getValue()).equals("finished")){
 //
 //                             }else if (String.valueOf(entry.getValue()).equals("break")) {
@@ -69,24 +70,27 @@ public void onReceive(Context context, Intent intent) {
 //                                 addDevice(entry.getKey(), "break");
 //                             }
 
-                                } else {
-                                    if (String.valueOf(entry.getValue()).equals("finished")) {
-
-                                    } else if (String.valueOf(entry.getValue()).equals("break")) {
-
                                     } else {
-                                        addDevice(entry.getKey(), "finished");
-                                        addPoint(1);
-                                        addHistory(0, entry.getKey());
-                                    }
-                                }
+                                        if (String.valueOf(entry.getValue()).equals("finished")) {
 
+                                        } else if (String.valueOf(entry.getValue()).equals("break")) {
+
+                                        } else {
+                                            addDevice(entry.getKey(), "finished");
+                                            addPoint(1);
+                                            addHistory(0, entry.getKey());
+                                        }
+                                    }
+
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
+            }
         }
+    }else {
+        CampaignActivity.onRecei=false;
     }
 }
     private Task<String> addDevice(String packagename,String time) {

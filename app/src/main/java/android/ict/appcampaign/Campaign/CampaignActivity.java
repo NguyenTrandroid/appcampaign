@@ -217,6 +217,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     }
     private void openChplay(final String packagename){
         isclick=true;
+        onRecei=false;
         SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
         editor.putString("packagename", packagename);
         editor.apply();
@@ -437,6 +438,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
 
                                         }else {
                                             if(!onRecei) {
+                                                onRecei=true;
                                                 addDevice(entry.getKey(), "finished");
                                                 addPoint(1);
                                                 addHistory(0, entry.getKey());
