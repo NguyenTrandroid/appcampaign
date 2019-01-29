@@ -220,7 +220,7 @@ public class FindAppActivity extends AppCompatActivity {
                             if(task.getResult().exists()){
 
                                 sLoading.dismiss();
-                                Toast.makeText(FindAppActivity.this, "This package name already exists", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FindAppActivity.this, String.valueOf(R.string.packagenamealreadyexists), Toast.LENGTH_SHORT).show();
                                 btFind.setEnabled(true);
                             }else {
                             DocumentSnapshot document = task.getResult();
@@ -285,7 +285,7 @@ public class FindAppActivity extends AppCompatActivity {
                 avLoading.hide();
                 avLoading.setVisibility(View.GONE);
                 tvStatusGetInfo.setVisibility(View.VISIBLE);
-                tvStatusGetInfo.setText("Package name doesn't exist on CH Play");
+                tvStatusGetInfo.setText(String.valueOf(R.string.PackagenamedoesntexistonCHPlay));
                 btFind.setEnabled(true);
             }
             else
@@ -293,7 +293,7 @@ public class FindAppActivity extends AppCompatActivity {
                 avLoading.hide();
                 avLoading.setVisibility(View.GONE);
                 tvStatusGetInfo.setVisibility(View.VISIBLE);
-                tvStatusGetInfo.setText("Get data is failed. Please try again");
+                tvStatusGetInfo.setText(String.valueOf(R.string.GetdataisfailedPleasetryagain));
                 btFind.setEnabled(true);
             }
         }

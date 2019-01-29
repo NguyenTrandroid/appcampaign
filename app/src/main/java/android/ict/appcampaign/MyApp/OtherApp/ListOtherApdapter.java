@@ -234,7 +234,7 @@ public class ListOtherApdapter extends RecyclerView.Adapter<ListOtherApdapter.Vi
                         }else {
                             sLoading.dismiss();
                             dialogAddPoint.cancel();
-                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "String.valueOf(R.string.Checkyourinternetconnection)", Toast.LENGTH_SHORT).show();
                         }
                         String result = (String) task.getResult().getData();
                         Log.d("teststring", result);

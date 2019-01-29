@@ -21,7 +21,7 @@
             android:layout_marginEnd="@dimen/_20sdp"
             android:gravity="center"
             android:maxLines="10"
-            android:text="This application has been installed. Installation will not earn points"
+            android:text="@string/thisappnopoints"
             android:textColor="@color/blue"
             android:textSize="@dimen/_15sdp" />
 
