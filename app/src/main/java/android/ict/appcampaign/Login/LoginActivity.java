@@ -297,7 +297,7 @@ public class LoginActivity extends AppCompatActivity {
                 ivSplash.setVisibility(View.VISIBLE);
                 if(isLoggedIn()){
                     kiemtra();
-//                    kiemtrataikhoan();
+                    kiemtrataikhoan();
                 }
 
             }
@@ -339,8 +339,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 handleFacebookAccessToken(loginResult.getAccessToken());
-                //cvLogin.setVisibility(View.VISIBLE);
-
             }
 
             @Override
