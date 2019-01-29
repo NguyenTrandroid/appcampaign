@@ -61,6 +61,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     Boolean intentch=false;
     Boolean isrs=false;
     Boolean isclick=false;
+    public static boolean onRecei=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -435,17 +436,19 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                         }else if (String.valueOf(entry.getValue()).equals("break")) {
 
                                         }else {
-                                            addDevice(entry.getKey(),"finished");
-                                            addPoint(1);
-                                            addHistory(0,entry.getKey());
+                                            if(!onRecei) {
+                                                addDevice(entry.getKey(), "finished");
+                                                addPoint(1);
+                                                addHistory(0, entry.getKey());
+                                            }
                                         }
                                     }
 
                                 }
                         }else {
-                            addDevice(packagename,"finished");
-                            addPoint(1);
-                            addHistory(0,packagename);
+//                            addDevice(packagename,"finished");
+//                            addPoint(1);
+//                            addHistory(0,packagename);
                         }
                     }
                     s.dismiss();

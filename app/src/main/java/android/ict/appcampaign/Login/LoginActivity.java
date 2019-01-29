@@ -484,9 +484,9 @@ public class LoginActivity extends AppCompatActivity {
 
                         }
                     }else {
-                        addDevice(packagename,"finished");
-                        addPoint(1);
-                        addHistory(0,packagename);
+//                        addDevice(packagename,"finished");
+//                        addPoint(1);
+//                        addHistory(0,packagename);
                     }
                 }
             }

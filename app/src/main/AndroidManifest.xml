@@ -19,6 +19,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <receiver
+            android:name=".Campaign.MyReceiver"
+            android:enabled="true"
+            android:priority="0" >
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" >
+                </action>
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
         <activity android:name=".MyApp.AddApp.FindAppActivity"
             android:screenOrientation="portrait">
         </activity>
