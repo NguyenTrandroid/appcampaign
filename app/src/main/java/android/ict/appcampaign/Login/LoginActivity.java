@@ -172,6 +172,7 @@ public class LoginActivity extends AppCompatActivity {
                                            @Override
                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                s.dismiss();
+                                               if(task.isSuccessful()){
                                                if (task.getResult().exists()) {
                                                    ArrayList<String> devices = (ArrayList<String>) task.getResult().get("devices");
                                                    if (devices != null) {
@@ -183,9 +184,16 @@ public class LoginActivity extends AppCompatActivity {
                                                                startActivity(intent);
                                                                finish();
                                                            } else {
-                                                               LoginManager.getInstance().logOut();
+                                                               rlLogin.setVisibility(View.VISIBLE);
                                                                cvLogin.setVisibility(View.VISIBLE);
+                                                               cvLogin.setOnClickListener(new View.OnClickListener() {
+                                                                   @Override
+                                                                   public void onClick(View view) {
+                                                                       LoginFacebook();
+                                                                   }
+                                                               });
                                                                Toast.makeText(LoginActivity.this, "Đạt giới hạn 3 thiết bị", Toast.LENGTH_SHORT).show();
+
 
                                                            }
                                                        } else {
@@ -211,6 +219,17 @@ public class LoginActivity extends AppCompatActivity {
                                                }
 
 
+                                           }else {
+                                                   Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                                                   rlLogin.setVisibility(View.VISIBLE);
+                                                   cvLogin.setVisibility(View.VISIBLE);
+                                                   cvLogin.setOnClickListener(new View.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(View view) {
+                                                           LoginFacebook();
+                                                       }
+                                                   });
+                                               }
                                            }
 
 
@@ -297,7 +316,7 @@ public class LoginActivity extends AppCompatActivity {
                 ivSplash.setVisibility(View.VISIBLE);
                 if(isLoggedIn()){
                     kiemtra();
-                    kiemtrataikhoan();
+//                    kiemtrataikhoan();
                 }
 
             }
@@ -312,9 +331,20 @@ public class LoginActivity extends AppCompatActivity {
                 if (isLoggedIn()) {
 //                    kiemtra();
                     // kiemtrataikhoan();
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    try {
+                        if(isConnected()){
+                        kiemtrakhoitao();
+                        }else {
+                            Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                            LoginFacebook();
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                        LoginFacebook();
+                    }
+//                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                    startActivity(intent);
+//                    finish();
 
                 } else {
                     LoginFacebook();
