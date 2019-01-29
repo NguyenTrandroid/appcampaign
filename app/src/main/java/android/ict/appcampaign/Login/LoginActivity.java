@@ -309,14 +309,12 @@ public class LoginActivity extends AppCompatActivity {
                 translateAnimation.setFillAfter(true);
                 rlSplashScreen.startAnimation(translateAnimation);
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                if (isLoggedIn()&&checkconnection) {
-                    kiemtra();
+                if (isLoggedIn()) {
+//                    kiemtra();
                     // kiemtrataikhoan();
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
-
-
 
                 } else {
                     LoginFacebook();
@@ -633,7 +631,6 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        checkconnection=true;
                         if (documentSnapshot.exists()) {
 //                                                   removePointV2(1,packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point),String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),)
 //                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
@@ -740,7 +737,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
-                    checkconnection=true;
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         if(task.getResult().getData().containsKey(packagename)){
