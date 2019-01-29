@@ -3,6 +3,8 @@ package android.ict.appcampaign.Campaign;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.ict.appcampaign.AppItem;
 import android.ict.appcampaign.CONST;
 import android.ict.appcampaign.Campaign.allapp.ListAllAppFragment;
@@ -45,6 +47,7 @@ import com.google.firebase.functions.HttpsCallableResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CampaignActivity extends AppCompatActivity implements ListCampaignAdapter.onItemClick{
     int tabSeclec = 0;
@@ -239,6 +242,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                     if (String.valueOf(entry.getValue()).equals("finished")) {
                                         dialogInstalled = new Dialog(CampaignActivity.this);
                                         dialogInstalled.setContentView(R.layout.dialog_installed);
+                                        Objects.requireNonNull(dialogInstalled.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                                         Button btOK = dialogInstalled.findViewById(R.id.bt_OK);
                                         dialogInstalled.show();
                                         btOK.setOnClickListener(new View.OnClickListener() {
