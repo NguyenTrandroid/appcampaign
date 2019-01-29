@@ -222,7 +222,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
                                            }else {
-                                                   Toast.makeText(LoginActivity.this, "String.valueOf(R.string.Checkyourinternetconnection)", Toast.LENGTH_SHORT).show();
+                                                   Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                                                    rlLogin.setVisibility(View.VISIBLE);
                                                    cvLogin.setVisibility(View.VISIBLE);
                                                    cvLogin.setOnClickListener(new View.OnClickListener() {
@@ -337,11 +337,11 @@ public class LoginActivity extends AppCompatActivity {
                         if(isConnected()){
                         kiemtrakhoitao();
                         }else {
-                            Toast.makeText(LoginActivity.this, "String.valueOf(R.string.Checkyourinternetconnection)", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                             LoginFacebook();
                         }
                     } catch (Exception e) {
-                        Toast.makeText(LoginActivity.this, "String.valueOf(R.string.Checkyourinternetconnection)", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                         LoginFacebook();
                     }
 //                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -381,7 +381,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException error) {
-                Toast.makeText(LoginActivity.this, "String.valueOf(R.string.Checkyourinternetconnection)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                 cvLogin.setVisibility(View.VISIBLE);
 
             }
@@ -654,7 +654,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(LoginActivity.this, "String.valueOf(R.string.Checkyourinternetconnection)", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                         LoginManager.getInstance().logOut();
                     }
                 })
@@ -790,7 +790,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 } else {
-                    Toast.makeText(LoginActivity.this, "String.valueOf(R.string.Checkyourinternetconnection)", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
 //                    Log.d(TAG, "get failed with ", task.getException());
                     LoginManager.getInstance().logOut();
                 }

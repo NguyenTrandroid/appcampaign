@@ -532,7 +532,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                     @Override
                     public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
                         if(!task.isSuccessful()){
-                            Toast.makeText(CampaignActivity.this, String.valueOf(R.string.Checkyourinternetconnection), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CampaignActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                             s.dismiss();
                             s2.dismiss();
                         }else {
@@ -645,7 +645,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                         // has failed then getResult() will throw an Exception which will be
                         // propagated down.
                         if(!task.isSuccessful()){
-                            Toast.makeText(CampaignActivity.this, "String.valueOf(R.string.Checkyourinternetconnection)", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CampaignActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                             s.dismiss();
                             s2.dismiss();
                         }
