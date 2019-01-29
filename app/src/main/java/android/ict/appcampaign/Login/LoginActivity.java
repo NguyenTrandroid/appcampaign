@@ -82,6 +82,8 @@ public class LoginActivity extends AppCompatActivity {
     Permissionruntime permissionruntime;
     Boolean checkconnection=false;
 
+    SLoading s;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         mFunctions = FirebaseFunctions.getInstance();
+        s = new SLoading(this);
 //        uniqueDevice = new UniqueDevice(this);
 //        uniqueDevice.getAndroidId();
 //        uniqueDevice.getDeviceId();
@@ -159,7 +162,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void kiemtrakhoitao() {
-        final SLoading s = new SLoading(this);
         s.show();
         db.collection("USER").document(auth.getUid())
                 .get().addOnFailureListener(new OnFailureListener() {
@@ -462,12 +464,12 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void kiemtra() {
-        SharedPreferences prefs = getSharedPreferences("nhat", MODE_PRIVATE);
-        final String packagename = prefs.getString("packagename", "null");
-        ///////
-        SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
-        editor.putString("packagename", "null");
-        editor.apply();
+//        SharedPreferences prefs = getSharedPreferences("nhat", MODE_PRIVATE);
+//        final String packagename = prefs.getString("packagename", "null");
+//        ///////
+//        SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
+//        editor.putString("packagename", "null");
+//        editor.apply();
         ////////
         final AppsManager appsManager = new AppsManager(this);
         DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());

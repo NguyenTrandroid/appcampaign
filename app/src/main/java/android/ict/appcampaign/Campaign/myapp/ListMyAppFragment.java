@@ -1,18 +1,23 @@
 package android.ict.appcampaign.Campaign.myapp;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.ict.appcampaign.AppItem;
 import android.ict.appcampaign.CONST;
 import android.ict.appcampaign.Campaign.CampaignActivity;
 import android.ict.appcampaign.Campaign.ItemApp;
 import android.ict.appcampaign.Campaign.ListCampaignAdapter;
 import android.ict.appcampaign.Campaign.interfacee.GetKeySearch;
+import android.ict.appcampaign.Login.LoginActivity;
 import android.ict.appcampaign.MyApp.OtherApp.ListOtherApdapter;
 import android.ict.appcampaign.R;
+import android.ict.appcampaign.utils.AppsManager;
 import android.ict.appcampaign.utils.DirectoryHelper;
 import android.ict.appcampaign.utils.FishNameComparator;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,9 +28,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -42,6 +51,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @SuppressLint("ValidFragment")
 public class ListMyAppFragment extends Fragment implements GetKeySearch {
@@ -50,6 +60,7 @@ public class ListMyAppFragment extends Fragment implements GetKeySearch {
     ListCampaignAdapter listCampaignAdapter;
     ArrayList<ItemApp> appArrayListMyApp = new ArrayList<>();
     ArrayList<ItemApp> appArrayList = new ArrayList<>();
+    ArrayList<String> myapp=new ArrayList<>();
     String uid;
     String pointUser;
     private FirebaseFirestore db;
@@ -97,10 +108,12 @@ public class ListMyAppFragment extends Fragment implements GetKeySearch {
 
     }
 
+
     private void loadApp() {
         recyclerView = view.findViewById(R.id.rv_listCampaign);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        DocumentReference docRef2 = db.collection("DEVICES").document(getDeviceId());
         final CollectionReference docRef = db.collection("LISTAPP");
         docRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -136,7 +149,7 @@ public class ListMyAppFragment extends Fragment implements GetKeySearch {
                                 swap(appArrayListMyApp.get(i), appArrayListMyApp.get(i + 1));
                             }
                         }
-                        listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListMyApp, pointUser);
+                        listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListMyApp, pointUser,myapp);
                         recyclerView.setAdapter(listCampaignAdapter);
 //                        ListCampaignAdapter.sLoading.dismiss();
                         CampaignActivity.s2.dismiss();
@@ -175,7 +188,7 @@ public class ListMyAppFragment extends Fragment implements GetKeySearch {
                     }
                 }
             }
-            listCampaignAdapter = new ListCampaignAdapter(getContext(), listTemp, pointUser);
+            listCampaignAdapter = new ListCampaignAdapter(getContext(), listTemp, pointUser,myapp);
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             listCampaignAdapter.notifyDataSetChanged();

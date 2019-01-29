@@ -235,7 +235,7 @@ public class HistoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialogClear = new Dialog(Objects.requireNonNull(HistoryActivity.this));
-                dialogClear.setContentView(R.layout.dialog_logout);
+                dialogClear.setContentView(R.layout.dialog_removehistory);
                 Objects.requireNonNull(dialogClear.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 Button btAdd = dialogClear.findViewById(R.id.bt_logout);
                 Button btCancel = dialogClear.findViewById(R.id.bt_cancel);

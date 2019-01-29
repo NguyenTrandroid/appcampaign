@@ -10,8 +10,10 @@ import android.ict.appcampaign.MyApp.OtherApp.ListOtherApdapter;
 import android.ict.appcampaign.R;
 import android.ict.appcampaign.utils.DirectoryHelper;
 import android.ict.appcampaign.utils.FishNameComparator;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -42,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 @SuppressLint("ValidFragment")
 public class ListAllAppFragment extends Fragment implements GetKeySearch {
@@ -52,6 +55,7 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
     ArrayList<ItemApp> appArrayList = new ArrayList<>();
     String uid;
     String pointUser;
+    ArrayList<String> myapp = new ArrayList<>();
     private FirebaseFirestore db;
     @Nullable
     @Override
@@ -101,6 +105,27 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
         recyclerView = view.findViewById(R.id.rv_listCampaign);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference reference = db.collection("DEVICES").document(getDeviceId());
+        reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                try {
+                    if (e != null) {
+                        Log.w("AAA", "Listen failed.", e);
+                        return;
+                    }
+                    myapp.clear();
+
+                    for (Map.Entry<String, Object> entry : documentSnapshot.getData().entrySet()) {
+                        if(entry.getValue().equals("finished")) {
+                            myapp.add(entry.getKey());
+                        }
+                    }
+                } catch (Exception s) {
+
+                }
+            }
+        });
         final CollectionReference docRef = db.collection("LISTAPP");
         docRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -162,7 +187,7 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
 //                                    appArrayListAllApp.add(0, itemAppx);
 //                                }
 //                        }
-                        listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser);
+                        listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser,myapp);
                         recyclerView.setAdapter(listCampaignAdapter);
                     }
                 } catch (Exception s) {
@@ -170,6 +195,10 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                 }
             }
         });
+    }
+    private  String getDeviceId() {
+        return  Settings.Secure.getString(getContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID) + Build.SERIAL;
     }
 
     private void swap(ItemApp itemApp1, ItemApp itemApp2) {
@@ -199,7 +228,7 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                     }
                 }
             }
-            listCampaignAdapter = new ListCampaignAdapter(getContext(), listTemp, pointUser);
+            listCampaignAdapter = new ListCampaignAdapter(getContext(), listTemp, pointUser,myapp);
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             listCampaignAdapter.notifyDataSetChanged();

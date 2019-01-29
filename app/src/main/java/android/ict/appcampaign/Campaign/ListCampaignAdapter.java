@@ -9,6 +9,7 @@ import android.ict.appcampaign.AppItem;
 import android.ict.appcampaign.Dialog.SLoading;
 import android.ict.appcampaign.Login.LoginActivity;
 import android.ict.appcampaign.R;
+import android.ict.appcampaign.utils.AppsManager;
 import android.ict.appcampaign.utils.DirectoryHelper;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -38,6 +39,7 @@ import com.google.firebase.functions.HttpsCallableResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,10 +62,12 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
     Button btOption;
     TextView tvOptionPoint;
     int getPositionTab;
-    public ListCampaignAdapter(Context context, List<ItemApp> listApp, String pointUser) {
+    ArrayList<String> myapp;
+    public ListCampaignAdapter(Context context, List<ItemApp> listApp, String pointUser,ArrayList<String> myapp) {
         this.context = context;
         this.listApp = listApp;
         this.pointUser = pointUser;
+        this.myapp=myapp;
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         onItemClick = (ListCampaignAdapter.onItemClick) context;
@@ -88,6 +92,10 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
         firebaseAuth = FirebaseAuth.getInstance();
         String uid = firebaseAuth.getUid();
         final ItemApp appItem = listApp.get(i);
+        viewHolder.ivDownload.setImageResource(R.drawable.ic_download);
+        if(myapp.contains(listApp.get(i).getPackageName())){
+            viewHolder.ivDownload.setImageResource(R.drawable.ic_download2);
+        }
         viewHolder.ivRemove.setVisibility(View.GONE);
         viewHolder.ivEdit.setVisibility(View.GONE);
         viewHolder.ivDownload.setVisibility(View.VISIBLE);

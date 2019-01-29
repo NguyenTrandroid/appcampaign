@@ -1,6 +1,7 @@
 package android.ict.appcampaign.Campaign;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -92,6 +93,8 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
         mFunctions = FirebaseFunctions.getInstance();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        dialogInstalled = new Dialog(CampaignActivity.this);
 //        kiemtrataikhoan();
         setPoints(mAuth.getUid());
     }
@@ -240,15 +243,24 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                             for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
                                 if (entry.getKey().equals(packagename)) {
                                     if (String.valueOf(entry.getValue()).equals("finished")) {
-                                        dialogInstalled = new Dialog(CampaignActivity.this);
                                         dialogInstalled.setContentView(R.layout.dialog_installed);
                                         Objects.requireNonNull(dialogInstalled.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                                         Button btOK = dialogInstalled.findViewById(R.id.bt_OK);
+                                        dialogInstalled.setCanceledOnTouchOutside(false);
+                                        dialogInstalled.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                            @Override
+                                            public void onCancel(DialogInterface dialogInterface) {
+                                                isclick=false;
+                                                s.dismiss();
+                                            }
+                                        });
                                         dialogInstalled.show();
                                         btOK.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 dialogInstalled.cancel();
+                                                isclick=false;
+                                                s.dismiss();
                                             }
                                         });
                                     } else if(String.valueOf(entry.getValue()).equals("break")){ db.collection("LISTAPP").document(packagename)
@@ -326,15 +338,17 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                                        }
                                 );
                     }
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse("market://details?id="+packagename));
+                    if(!dialogInstalled.isShowing()) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse("market://details?id=" + packagename));
 //
 //                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
 //
 //                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
-                    intentch=true;
-                    isrs=false;
-                    startActivityForResult(intent,2);
+                        intentch = true;
+                        isrs = false;
+                        startActivityForResult(intent, 2);
+                    }
 
                 }
             }
@@ -413,12 +427,12 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
 //            }
 //        }
 //        if(have==false){
-        SharedPreferences prefs = getSharedPreferences("nhat", MODE_PRIVATE);
-        final String packagename = prefs.getString("packagename", "null");
-        ///////
-        SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
-        editor.putString("packagename", "null");
-        editor.apply();
+//        SharedPreferences prefs = getSharedPreferences("nhat", MODE_PRIVATE);
+//        final String packagename = prefs.getString("packagename", "null");
+//        ///////
+//        SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
+//        editor.putString("packagename", "null");
+//        editor.apply();
         ////////
         final AppsManager appsManager = new AppsManager(this);
             DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
