@@ -82,7 +82,7 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
         reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                try {
+                try { 
                     if (e != null) {
                         Log.w("AAA", "Listen failed.", e);
                         return;
