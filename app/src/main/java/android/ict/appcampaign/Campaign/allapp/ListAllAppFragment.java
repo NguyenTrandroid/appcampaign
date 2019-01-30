@@ -198,7 +198,8 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
 //                                }
 //                        }
                         check();
-
+                        listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser, myapp);
+                        recyclerView.setAdapter(listCampaignAdapter);
                     }
                 } catch (Exception s) {
 
