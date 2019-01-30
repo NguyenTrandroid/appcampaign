@@ -93,9 +93,10 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
         String uid = firebaseAuth.getUid();
         final ItemApp appItem = listApp.get(i);
         viewHolder.ivDownload.setImageResource(R.drawable.ic_download);
-        if(myapp.contains(listApp.get(i).getPackageName())){
-            viewHolder.ivDownload.setImageResource(R.drawable.ic_download2);
-        }
+//        if(myapp.contains(listApp.get(i).getPackageName())){
+////            viewHolder.ivDownload.setImageResource(R.drawable.ic_download2);
+//            viewHolder.cardView.setVisibility(View.GONE);
+//        }
         viewHolder.ivRemove.setVisibility(View.GONE);
         viewHolder.ivEdit.setVisibility(View.GONE);
         viewHolder.ivDownload.setVisibility(View.VISIBLE);
@@ -120,7 +121,7 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
                 if(!appItem.getUserid().equals(mAuth.getUid())) {
 //                    sLoading.show();
 //                    viewHolder.cardView.setClickable(false);
-                    onItemClick.onItemClick(appItem.getPackageName());
+                    onItemClick.onItemClick(appItem);
                 }
             }
         });
@@ -391,7 +392,7 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
     }
 
     public interface onItemClick {
-        void onItemClick(String packagename);
+        void onItemClick(ItemApp appItem);
     }
     private Task<String> removePointV2(int diemadduser, String listappPackagename, String listappPoint, String listappLinkanh, String listappTenapp
             , String listappTennhaphattrien, String adminpoint, String admindouutien, String admintime, String adminuserid) {

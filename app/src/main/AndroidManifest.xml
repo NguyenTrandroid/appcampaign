@@ -19,7 +19,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Campaign.CHPlayActivity"></activity>
+        <activity android:name=".Campaign.CHPlayActivity"
+            android:screenOrientation="portrait"></activity>
 
         <receiver
             android:name=".Campaign.MyReceiver"
@@ -47,6 +48,10 @@
         <activity
             android:name=".Campaign.CampaignActivity"
             android:screenOrientation="portrait" />
+        <!-- Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
         <activity
             android:name=".Login.LoginActivity"
             android:screenOrientation="portrait">

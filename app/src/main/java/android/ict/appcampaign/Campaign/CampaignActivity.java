@@ -17,6 +17,7 @@ import android.ict.appcampaign.R;
 import android.ict.appcampaign.utils.AppsManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,6 +34,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -45,12 +48,17 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class CampaignActivity extends AppCompatActivity implements ListCampaignAdapter.onItemClick{
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+
+public class CampaignActivity extends AppCompatActivity implements ListCampaignAdapter.onItemClick, RewardedVideoAdListener {
     int tabSeclec = 0;
     ImageView ivBack;
     TabLayout tabLayout;
@@ -60,7 +68,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     TextView tvPointUser;
     private FirebaseFirestore db;
     private FirebaseFunctions mFunctions;
-     public static SLoading s ;
+    public static SLoading s ;
     public  static SLoading s2 ;
     Boolean isshow=false;
     GetKeySearch getKeySearch;
@@ -69,6 +77,10 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     Boolean isclick=false;
     public static boolean onRecei=false;
     Dialog dialogInstalled;
+    private RewardedVideoAd mRewardedVideoAd;
+    private ItemApp temp;
+    Boolean onReceir=false;
+    Boolean isshowing=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +91,10 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
         InitViewPager();
         s=new SLoading(this);
         s2=new SLoading(this);
+    }
+    private void loadRewardedVideoAd() {
+        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917",
+                new AdRequest.Builder().build());
     }
 
     private void InitView() {
@@ -128,6 +144,10 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     }
 
     private void InitAction() {
+
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(this);
+        loadRewardedVideoAd();
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -220,17 +240,17 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     }
 
     @Override
-    public void onItemClick(String packagename) {
+    public void onItemClick(ItemApp itemApp) {
         if(!isclick) {
-            openChplay(packagename);
+            openChplay(itemApp);
         }
     }
-    private void openChplay(final String packagename){
+    private void openChplay(final ItemApp itemApp){
         isclick=true;
         onRecei=false;
-        SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
-        editor.putString("packagename", packagename);
-        editor.apply();
+//        SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
+//        editor.putString("packagename", packagename);
+//        editor.apply();
         s.show();
         DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -239,54 +259,54 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        if (task.getResult().getData().containsKey(packagename)) {
+                        if (task.getResult().getData().containsKey(itemApp.getPackageName())) {
                             for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                if (entry.getKey().equals(packagename)) {
+                                if (entry.getKey().equals(itemApp.getPackageName())) {
                                     if (String.valueOf(entry.getValue()).equals("finished")) {
-                                        dialogInstalled.setContentView(R.layout.dialog_installed);
-                                        Objects.requireNonNull(dialogInstalled.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                                        Button btCANCEL = dialogInstalled.findViewById(R.id.bt_CANCEL);
-                                        Button btCONTINUE = dialogInstalled.findViewById(R.id.bt_CONTINUE);
-                                        dialogInstalled.setCanceledOnTouchOutside(false);
-                                        dialogInstalled.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                            @Override
-                                            public void onCancel(DialogInterface dialogInterface) {
-                                                isclick=false;
-                                                s.dismiss();
-                                            }
-                                        });
-                                        dialogInstalled.show();
-                                        btCANCEL.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                dialogInstalled.cancel();
-                                                isclick=false;
-                                                s.dismiss();
-                                            }
-                                        });
-                                        btCONTINUE.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                Intent intent = new Intent(Intent.ACTION_VIEW);
-                                                intent.setData(Uri.parse("market://details?id=" + packagename));
-                                                dialogInstalled.cancel();
-                                                isclick=false;
-                                                s.dismiss();
-                                                startActivityForResult(intent, 99);
-                                            }
-                                        });
-                                    } else if(String.valueOf(entry.getValue()).equals("break")){ db.collection("LISTAPP").document(packagename)
+//                                        dialogInstalled.setContentView(R.layout.dialog_installed);
+//                                        Objects.requireNonNull(dialogInstalled.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//                                        Button btCANCEL = dialogInstalled.findViewById(R.id.bt_CANCEL);
+//                                        Button btCONTINUE = dialogInstalled.findViewById(R.id.bt_CONTINUE);
+//                                        dialogInstalled.setCanceledOnTouchOutside(false);
+//                                        dialogInstalled.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                                            @Override
+//                                            public void onCancel(DialogInterface dialogInterface) {
+//                                                isclick=false;
+//                                                s.dismiss();
+//                                            }
+//                                        });
+//                                        dialogInstalled.show();
+//                                        btCANCEL.setOnClickListener(new View.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(View v) {
+//                                                dialogInstalled.cancel();
+//                                                isclick=false;
+//                                                s.dismiss();
+//                                            }
+//                                        });
+//                                        btCONTINUE.setOnClickListener(new View.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(View v) {
+//                                                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                                                intent.setData(Uri.parse("market://details?id=" + packagename));
+//                                                dialogInstalled.cancel();
+//                                                isclick=false;
+//                                                s.dismiss();
+//                                                startActivityForResult(intent, 99);
+//                                            }
+//                                        });
+                                    } else if(String.valueOf(entry.getValue()).equals("break")){ db.collection("LISTAPP").document(itemApp.getPackageName())
                                             .get()
                                             .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                                        @Override
                                                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                                            if (task.getResult().exists()) {
                                                                                if(Integer.parseInt(String.valueOf(task.getResult().get("points")))>0) {
-                                                                                   addDevice(packagename, String.valueOf(System.currentTimeMillis()));
+                                                                                   addDevice(itemApp.getPackageName(), String.valueOf(System.currentTimeMillis()));
 //                                                   removePointV2(1,packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point),String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),)
 //                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
 //                                                   addHistory(packagename + "/" + task.getResult().get("tenapp") + "/" + task.getResult().get("tennhaphattrien") + "/" + task.getResult().get("time"));
-                                                                                   xoapointappuser2(1, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - 1), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
+                                                                                   xoapointappuser2(1, itemApp.getPackageName(), String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - 1), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
                                                                                }else {
                                                                                    s.dismiss();
                                                                                }
@@ -298,25 +318,25 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                             );
 
                                     }else if ((System.currentTimeMillis() - Long.parseLong(String.valueOf(entry.getValue())) > 3600000)) {
-                                        xoapointapplistapp2(-1, packagename);
-                                        addDevice(packagename, "break");
+                                        xoapointapplistapp2(-1, itemApp.getPackageName());
+                                        addDevice(itemApp.getPackageName(), "break");
                                     }
 
                                 }
                             }
                         }else {
-                            db.collection("LISTAPP").document(packagename)
+                            db.collection("LISTAPP").document(itemApp.getPackageName())
                                     .get()
                                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                                @Override
                                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                                    if (task.getResult().exists()) {
                                                                        if(Integer.parseInt(String.valueOf(task.getResult().get("points")))>0) {
-                                                                           addDevices(packagename, String.valueOf(System.currentTimeMillis()));
+                                                                           addDevices(itemApp.getPackageName(), String.valueOf(System.currentTimeMillis()));
 //                                                   removePointV2(1,packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point),String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),)
 //                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
 //                                                   addHistory(packagename + "/" + task.getResult().get("tenapp") + "/" + task.getResult().get("tennhaphattrien") + "/" + task.getResult().get("time"));
-                                                                           xoapointappuser2(1, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - 1), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
+                                                                           xoapointappuser2(1, itemApp.getPackageName(), String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - 1), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
                                                                        }else {
                                                                            s.dismiss();
                                                                        }
@@ -328,18 +348,18 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                     );
                         }
                     }else {
-                        db.collection("LISTAPP").document(packagename)
+                        db.collection("LISTAPP").document(itemApp.getPackageName())
                                 .get()
                                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                            @Override
                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                                if (task.getResult().exists()) {
                                                                    if(Integer.parseInt(String.valueOf(task.getResult().get("points")))>0) {
-                                                                       addDevices(packagename, String.valueOf(System.currentTimeMillis()));
+                                                                       addDevices(itemApp.getPackageName(), String.valueOf(System.currentTimeMillis()));
 //                                                   removePointV2(1,packagename,String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point),String.valueOf(task.getResult().get("linkanh")),String.valueOf(task.getResult().get("tenapp")),String.valueOf(task.getResult().get("tennhaphattrien")),)
 //                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
 //                                                   addHistory(packagename + "/" + task.getResult().get("tenapp") + "/" + task.getResult().get("tennhaphattrien") + "/" + task.getResult().get("time"));
-                                                                       xoapointappuser2(1, packagename, String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - 1), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
+                                                                       xoapointappuser2(1, itemApp.getPackageName(), String.valueOf(task.getResult().get("userid")), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - 1), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")));
                                                                    }else {
                                                                        s.dismiss();
                                                                    }
@@ -350,17 +370,30 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                                        }
                                 );
                     }
-                    if(!dialogInstalled.isShowing()) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse("market://details?id=" + packagename));
-//
-//                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
-//
-//                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
-                        intentch = true;
-                        isrs = false;
-                        startActivityForResult(intent, 2);
+                    temp=itemApp;
+                    if (mRewardedVideoAd.isLoaded()) {
+                        mRewardedVideoAd.show();
+                    }else {
+                            s.dismiss();
+                            isclick = false;
+                            intentch = true;
+                            isrs = false;
+                            Intent i = new Intent(CampaignActivity.this, CHPlayActivity.class);
+                            i.putExtra("tenapp", temp.getTenApp());
+                            i.putExtra("tennhaphattrien", temp.getNhaPhatTrien());
+                            i.putExtra("packagename", temp.getPackageName());
+                            i.putExtra("linkanh", temp.getLinkIcon());
+                            startActivity(i);
                     }
+
+//                        Intent intent = new Intent(Intent.ACTION_VIEW);
+//                        intent.setData(Uri.parse("market://details?id=" + packagename));
+////
+////                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
+////
+////                                                       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + packagename));
+
+//                        startActivityForResult(intent, 2);
 
                 }
             }
@@ -402,21 +435,21 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 2) {
-            Log.d("tesssss","res");
-            isrs=true;
-//            if(!isshow){
-            s2.show();
-//            isshow=true;
-//            }
-            Thread thread = new Thread() {
-                @Override
-                public void run() {
-                    kiemtra();
-                }
-            };
-            thread.start();
-        }
+//        if (requestCode == 2) {
+//            Log.d("tesssss","res");
+//            isrs=true;
+////            if(!isshow){
+//            s2.show();
+////            isshow=true;
+////            }
+//            Thread thread = new Thread() {
+//                @Override
+//                public void run() {
+//                    kiemtra();
+//                }
+//            };
+//            thread.start();
+//        }
     }
     public static void receiver(String packename){
 
@@ -772,5 +805,59 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+        isclick=false;
+        s.dismiss();
+        if(onReceir){
+            intentch = true;
+            isrs = false;
+            onReceir=false;
+            Intent i = new Intent(CampaignActivity.this,CHPlayActivity.class);
+            i.putExtra("tenapp",temp.getTenApp());
+            i.putExtra("tennhaphattrien",temp.getNhaPhatTrien());
+            i.putExtra("packagename",temp.getPackageName());
+            i.putExtra("linkanh",temp.getLinkIcon());
+            startActivity(i);
+        }
+        loadRewardedVideoAd();
+    }
+
+    @Override
+    public void onRewarded(RewardItem rewardItem) {
+
+        Log.d("ádasdasdas", "onR: "+rewardItem.getAmount());
+        onReceir=true;
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+
+        Log.d("ádasdasdas", "onLEFT: ");
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int i) {
+
+    }
+
+    @Override
+    public void onRewardedVideoCompleted() {
     }
 }

@@ -115,27 +115,27 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
         recyclerView = view.findViewById(R.id.rv_listCampaign);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference reference = db.collection("DEVICES").document(getDeviceId());
-        reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                try {
-                    if (e != null) {
-                        Log.w("AAA", "Listen failed.", e);
-                        return;
-                    }
-                    myapp.clear();
-
-                    for (Map.Entry<String, Object> entry : documentSnapshot.getData().entrySet()) {
-                        if (entry.getValue().equals("finished")) {
-                            myapp.add(entry.getKey());
-                        }
-                    }
-                } catch (Exception s) {
-
-                }
-            }
-        });
+//        DocumentReference reference = db.collection("DEVICES").document(getDeviceId());
+//        reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+//            @Override
+//            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+//                try {
+//                    if (e != null) {
+//                        Log.w("AAA", "Listen failed.", e);
+//                        return;
+//                    }
+//                    myapp.clear();
+//
+//                    for (Map.Entry<String, Object> entry : documentSnapshot.getData().entrySet()) {
+//                        if (entry.getValue().equals("finished")) {
+//                            myapp.add(entry.getKey());
+//                        }
+//                    }
+//                } catch (Exception s) {
+//
+//                }
+//            }
+//        });
         final CollectionReference docRef = db.collection("LISTAPP");
         docRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -198,8 +198,7 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
 //                                }
 //                        }
                         check();
-                        listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser, myapp);
-                        recyclerView.setAdapter(listCampaignAdapter);
+
                     }
                 } catch (Exception s) {
 
@@ -270,6 +269,8 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                         }
                     }
                 }
+                listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser, myapp);
+                recyclerView.setAdapter(listCampaignAdapter);
             }
         });
     }
