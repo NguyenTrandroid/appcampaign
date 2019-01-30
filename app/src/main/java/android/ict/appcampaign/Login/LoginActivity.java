@@ -250,27 +250,21 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.bt_login);
         callbackManager = CallbackManager.Factory.create();
         loginButton.setReadPermissions("email", "public_profile");
-//        if(isLoggedIn()){
-//            kiemtrataikhoan();
-//            Log.d("teststringsssss","login" );
-//        }else {
-//            Log.d("teststringsssss","ko" );
-//            avLoading.setVisibility(View.GONE);
-//            rlSplashScreen.setVisibility(View.GONE);
-//            LoginFacebook();
-//        }
-        if (isLoggedIn() && !startSplashScreen) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
-        }
+
         if (startSplashScreen) {
             avLoading.show();
             SetSplashScreen();
-//        }
+            startSplashScreen=false;
         } else {
-            avLoading.setVisibility(View.GONE);
-            rlSplashScreen.setVisibility(View.GONE);
-            LoginFacebook();
+            if(isLoggedIn()){
+                startActivity(new Intent(this,MainActivity.class));
+                finish();
+            }else {
+                avLoading.setVisibility(View.GONE);
+                rlSplashScreen.setVisibility(View.GONE);
+                LoginFacebook();
+            }
+
         }
 
 
