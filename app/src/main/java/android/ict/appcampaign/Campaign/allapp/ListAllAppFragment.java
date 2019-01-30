@@ -162,7 +162,6 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                                 appArrayListAllApp.add(itemApp);
                             }
                         }
-                        appArrayList = appArrayListAllApp;
                         Collections.sort(appArrayListAllApp, new Comparator<ItemApp>() {
                             @Override
                             public int compare(ItemApp itemApp, ItemApp t1) {
@@ -198,6 +197,7 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
 //                                }
 //                        }
                         check();
+                        appArrayList = appArrayListAllApp;
                         listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser, myapp);
                         recyclerView.setAdapter(listCampaignAdapter);
                     }
