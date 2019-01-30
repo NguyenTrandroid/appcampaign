@@ -1,6 +1,10 @@
 package android.ict.appcampaign.Campaign.allapp;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.ict.appcampaign.AppItem;
 import android.ict.appcampaign.CONST;
 import android.ict.appcampaign.Campaign.ItemApp;
@@ -10,6 +14,7 @@ import android.ict.appcampaign.MyApp.OtherApp.ListOtherApdapter;
 import android.ict.appcampaign.R;
 import android.ict.appcampaign.utils.DirectoryHelper;
 import android.ict.appcampaign.utils.FishNameComparator;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,9 +29,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -45,6 +53,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @SuppressLint("ValidFragment")
 public class ListAllAppFragment extends Fragment implements GetKeySearch {
@@ -57,6 +66,7 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
     String pointUser;
     ArrayList<String> myapp = new ArrayList<>();
     private FirebaseFirestore db;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -117,7 +127,7 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                     myapp.clear();
 
                     for (Map.Entry<String, Object> entry : documentSnapshot.getData().entrySet()) {
-                        if(entry.getValue().equals("finished")) {
+                        if (entry.getValue().equals("finished")) {
                             myapp.add(entry.getKey());
                         }
                     }
@@ -156,15 +166,15 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                         Collections.sort(appArrayListAllApp, new Comparator<ItemApp>() {
                             @Override
                             public int compare(ItemApp itemApp, ItemApp t1) {
-                                Integer b =itemApp.getDoUuTien();
-                                Integer a =t1.getDoUuTien();
-                                int sizeCmp =a.compareTo(b);
+                                Integer b = itemApp.getDoUuTien();
+                                Integer a = t1.getDoUuTien();
+                                int sizeCmp = a.compareTo(b);
                                 if (sizeCmp != 0) {
                                     return sizeCmp;
 
                                 }
-                                Long c =itemApp.getTime();
-                                Long d =t1.getTime();
+                                Long c = itemApp.getTime();
+                                Long d = t1.getTime();
                                 int nrOfToppingsCmp = c.compareTo(d);
                                 if (nrOfToppingsCmp != 0) {
                                     return nrOfToppingsCmp;
@@ -187,7 +197,8 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
 //                                    appArrayListAllApp.add(0, itemAppx);
 //                                }
 //                        }
-                        listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser,myapp);
+                        check();
+                        listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser, myapp);
                         recyclerView.setAdapter(listCampaignAdapter);
                     }
                 } catch (Exception s) {
@@ -196,8 +207,9 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
             }
         });
     }
-    private  String getDeviceId() {
-        return  Settings.Secure.getString(getContext().getContentResolver(),
+
+    private String getDeviceId() {
+        return Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID) + Build.SERIAL;
     }
 
@@ -207,14 +219,14 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
         itemApp1 = itemApp2;
         itemApp2 = itemApp;
     }
+
     @Override
     public void onGetKey(String keySearch) {
-        Log.d("AAAAA", "onGetKey: "+keySearch);
+        Log.d("AAAAA", "onGetKey: " + keySearch);
         ArrayList<ItemApp> listTemp = new ArrayList<>();
         listTemp = new ArrayList<>();
         listTemp.clear();
-        if(appArrayList!=null)
-        {
+        if (appArrayList != null) {
             if (keySearch.length() == 0) {
                 listTemp.addAll(appArrayList);
             } else {
@@ -223,16 +235,42 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                         if (appItem.getTenApp().toLowerCase().contains(keySearch.toLowerCase())) {
                             listTemp.add(appItem);
                         }
-                    }   catch (Exception e){
+                    } catch (Exception e) {
 
                     }
                 }
             }
-            listCampaignAdapter = new ListCampaignAdapter(getContext(), listTemp, pointUser,myapp);
+            listCampaignAdapter = new ListCampaignAdapter(getContext(), listTemp, pointUser, myapp);
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             listCampaignAdapter.notifyDataSetChanged();
             recyclerView.setAdapter(listCampaignAdapter);
         }
+    }
+
+    private void check() {
+        DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        for(int i=0; i<appArrayListAllApp.size(); ++i){
+                            if (task.getResult().getData().containsKey(appArrayListAllApp.get(i).getPackageName())) {
+                                for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
+                                    if (entry.getKey().equals(appArrayListAllApp.get(i).getPackageName())) {
+                                        if (String.valueOf(entry.getValue()).equals("finished")) {
+                                            Log.d("TTTTT", "onComplete: có vào");
+                                            appArrayListAllApp.remove(i);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 }
