@@ -19,28 +19,36 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".Campaign.CHPlayActivity"></activity>
+
         <receiver
             android:name=".Campaign.MyReceiver"
             android:enabled="true"
-            android:priority="0" >
+            android:priority="0">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_ADDED" >
-                </action>
+                <action android:name="android.intent.action.PACKAGE_ADDED"></action>
+
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-        <activity android:name=".MyApp.AddApp.FindAppActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".Profile.History.HistoryActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Profile.ProfileActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MyApp.MyAppActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Campaign.CampaignActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Login.LoginActivity"
+
+        <activity
+            android:name=".MyApp.AddApp.FindAppActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".Profile.History.HistoryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Profile.ProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MyApp.MyAppActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Campaign.CampaignActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Login.LoginActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -48,8 +56,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".utils.DownloadFileService"
