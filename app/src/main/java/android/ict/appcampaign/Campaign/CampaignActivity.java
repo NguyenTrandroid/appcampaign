@@ -245,7 +245,8 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                     if (String.valueOf(entry.getValue()).equals("finished")) {
                                         dialogInstalled.setContentView(R.layout.dialog_installed);
                                         Objects.requireNonNull(dialogInstalled.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                                        Button btOK = dialogInstalled.findViewById(R.id.bt_OK);
+                                        Button btCANCEL = dialogInstalled.findViewById(R.id.bt_CANCEL);
+                                        Button btCONTINUE = dialogInstalled.findViewById(R.id.bt_CONTINUE);
                                         dialogInstalled.setCanceledOnTouchOutside(false);
                                         dialogInstalled.setOnCancelListener(new DialogInterface.OnCancelListener() {
                                             @Override
@@ -255,12 +256,23 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                             }
                                         });
                                         dialogInstalled.show();
-                                        btOK.setOnClickListener(new View.OnClickListener() {
+                                        btCANCEL.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 dialogInstalled.cancel();
                                                 isclick=false;
                                                 s.dismiss();
+                                            }
+                                        });
+                                        btCONTINUE.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                intent.setData(Uri.parse("market://details?id=" + packagename));
+                                                dialogInstalled.cancel();
+                                                isclick=false;
+                                                s.dismiss();
+                                                startActivityForResult(intent, 99);
                                             }
                                         });
                                     } else if(String.valueOf(entry.getValue()).equals("break")){ db.collection("LISTAPP").document(packagename)
