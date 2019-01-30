@@ -357,7 +357,7 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
                                                                                }
                                                                            }
                                                                            if(!exist){
-                                                                                   Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                                                                                   Toast.makeText(context, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                                                                                    sLoading.dismiss();
                                                                                    dialogRemoveApp.cancel();
 
@@ -422,7 +422,7 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
                             sLoading.dismiss();
                         }else {
                              sLoading.dismiss();
-                             Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                             Toast.makeText(context, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                          }
 //                        if(sLoading!=null)
 //                        {
@@ -471,7 +471,7 @@ public class ListCampaignAdapter extends RecyclerView.Adapter<ListCampaignAdapte
                             sLoading.dismiss();
                         }else {
                             sLoading.dismiss();
-                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                         }
 
                         String result = (String) task.getResult().getData();

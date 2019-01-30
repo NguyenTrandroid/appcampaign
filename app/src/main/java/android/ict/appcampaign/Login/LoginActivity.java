@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseFunctions mFunctions;
     private UniqueDevice uniqueDevice;
     Permissionruntime permissionruntime;
-    Boolean checkconnection = false;
+    Boolean checkconnection=false;
 
     SLoading s;
 
@@ -174,55 +174,55 @@ public class LoginActivity extends AppCompatActivity {
                                            @Override
                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                s.dismiss();
-                                               if (task.isSuccessful()) {
-                                                   if (task.getResult().exists()) {
-                                                       ArrayList<String> devices = (ArrayList<String>) task.getResult().get("devices");
-                                                       if (devices != null) {
-                                                           if (!devices.contains(getDeviceId())) {
-                                                               if (devices.size() < 3) {
-                                                                   devices.add(getDeviceId());
-                                                                   addUserDevice();
-                                                                   Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                                                   startActivity(intent);
-                                                                   finish();
-                                                               } else {
-                                                                   rlLogin.setVisibility(View.VISIBLE);
-                                                                   cvLogin.setVisibility(View.VISIBLE);
-                                                                   cvLogin.setOnClickListener(new View.OnClickListener() {
-                                                                       @Override
-                                                                       public void onClick(View view) {
-                                                                           LoginFacebook();
-                                                                       }
-                                                                   });
-                                                                   Toast.makeText(LoginActivity.this, "Đạt giới hạn 3 thiết bị", Toast.LENGTH_SHORT).show();
-
-
-                                                               }
-                                                           } else {
+                                               if(task.isSuccessful()){
+                                               if (task.getResult().exists()) {
+                                                   ArrayList<String> devices = (ArrayList<String>) task.getResult().get("devices");
+                                                   if (devices != null) {
+                                                       if (!devices.contains(getDeviceId())) {
+                                                           if (devices.size() < 3) {
+                                                               devices.add(getDeviceId());
+                                                               addUserDevice();
                                                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                                                startActivity(intent);
                                                                finish();
+                                                           } else {
+                                                               rlLogin.setVisibility(View.VISIBLE);
+                                                               cvLogin.setVisibility(View.VISIBLE);
+                                                               cvLogin.setOnClickListener(new View.OnClickListener() {
+                                                                   @Override
+                                                                   public void onClick(View view) {
+                                                                       LoginFacebook();
+                                                                   }
+                                                               });
+                                                               Toast.makeText(LoginActivity.this, "Đạt giới hạn 3 thiết bị", Toast.LENGTH_SHORT).show();
+
+
                                                            }
-//
                                                        } else {
-                                                           ArrayList<String> device = new ArrayList<>();
-                                                           device.add(getDeviceId());
-                                                           addUserDevice();
                                                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                                            startActivity(intent);
                                                            finish();
-
                                                        }
+//
                                                    } else {
-                                                       addNewUser("sa");
+                                                       ArrayList<String> device = new ArrayList<>();
+                                                       device.add(getDeviceId());
+                                                       addUserDevice();
                                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                                        startActivity(intent);
                                                        finish();
+
                                                    }
-
-
                                                } else {
-                                                   Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                                                   addNewUser("sa");
+                                                   Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                   startActivity(intent);
+                                                   finish();
+                                               }
+
+
+                                           }else {
+                                                   Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                                                    rlLogin.setVisibility(View.VISIBLE);
                                                    cvLogin.setVisibility(View.VISIBLE);
                                                    cvLogin.setOnClickListener(new View.OnClickListener() {
@@ -250,25 +250,31 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.bt_login);
         callbackManager = CallbackManager.Factory.create();
         loginButton.setReadPermissions("email", "public_profile");
-
+//        if(isLoggedIn()){
+//            kiemtrataikhoan();
+//            Log.d("teststringsssss","login" );
+//        }else {
+//            Log.d("teststringsssss","ko" );
+//            avLoading.setVisibility(View.GONE);
+//            rlSplashScreen.setVisibility(View.GONE);
+//            LoginFacebook();
+//        }
+        if (isLoggedIn() && !startSplashScreen) {
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+        }
         if (startSplashScreen) {
             avLoading.show();
             SetSplashScreen();
-            startSplashScreen = false;
+//        }
         } else {
-            if (isLoggedIn()) {
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                finish();
-            } else {
-                avLoading.setVisibility(View.GONE);
-                rlSplashScreen.setVisibility(View.GONE);
-                LoginFacebook();
-            }
+            avLoading.setVisibility(View.GONE);
+            rlSplashScreen.setVisibility(View.GONE);
+            LoginFacebook();
         }
 
 
     }
-
     private void kiemtrataikhoan() {
         DocumentReference reference = db.collection("USER").document(auth.getUid());
         reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -285,14 +291,14 @@ public class LoginActivity extends AppCompatActivity {
                         if (Integer.parseInt(String.valueOf(documentSnapshot.get("enable"))) == 0) {
                             LoginManager.getInstance().logOut();
 //                        loginActivity.startSplashScreen = false;
-                            Toast.makeText(LoginActivity.this, R.string.AccDis, Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, R.string.AccDis, Toast.LENGTH_LONG).show();
 //                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
 //                        finish();
 
-                        } else {
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
-                        }
+                    }else {
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
+                    }
 
                     }
                 } catch (Exception s) {
@@ -303,14 +309,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void SetSplashScreen() {
+        private void SetSplashScreen() {
         AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
         alphaAnimation.setDuration(3369);
         alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 ivSplash.setVisibility(View.VISIBLE);
-                if (isLoggedIn()) {
+                if(isLoggedIn()){
                     kiemtra();
 //                    kiemtrataikhoan();
                 }
@@ -328,14 +334,14 @@ public class LoginActivity extends AppCompatActivity {
 //                    kiemtra();
                     // kiemtrataikhoan();
                     try {
-                        if (isConnected()) {
-                            kiemtrakhoitao();
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                        if(isConnected()){
+                        kiemtrakhoitao();
+                        }else {
+                            Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                             LoginFacebook();
                         }
                     } catch (Exception e) {
-                        Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                         LoginFacebook();
                     }
 //                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -344,6 +350,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 } else {
                     LoginFacebook();
+
+
                 }
 
             }
@@ -373,7 +381,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException error) {
-                Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                 cvLogin.setVisibility(View.VISIBLE);
 
             }
@@ -383,8 +391,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                if (checkReadExternalPermission() && checkReadPhoneStatePermission() && checkWriteExternalPermission()) {
-                cvLogin.setVisibility(View.GONE);
-                loginButton.performClick();
+                    cvLogin.setVisibility(View.GONE);
+                    loginButton.performClick();
 //                } else {
 //                    permissionruntime.requestPermission(MainActivity.class);
 
@@ -417,6 +425,8 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = auth.getCurrentUser();
                             kiemtrakhoitao();
                             kiemtra();
+                            ;
+
 
 
                         } else {
@@ -471,37 +481,37 @@ public class LoginActivity extends AppCompatActivity {
                     if (document.exists()) {
                         for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
                             ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
-                            Boolean have = false;
-                            for (int i = 0; i < applist.size(); i++) {
-                                if (
-                                        applist.get(i).getAppPackage().equals(entry.getKey())) {
-                                    have = true;
+                            Boolean have =false;
+                            for (int i = 0; i <applist.size() ; i++) {
+                                if(
+                                applist.get(i).getAppPackage().equals(entry.getKey())){
+                                    have=true;
                                 }
                             }
-                            if (!have) {
-                                if (String.valueOf(entry.getValue()).equals("finished")) {
+                            if(!have){
+                                if(String.valueOf(entry.getValue()).equals("finished")){
 
-                                } else if (String.valueOf(entry.getValue()).equals("break")) {
+                                }else if (String.valueOf(entry.getValue()).equals("break")) {
 
-                                } else if ((System.currentTimeMillis() - Long.parseLong(String.valueOf(entry.getValue())) > 3600000)) {
-                                    xoapointapplistapp2(-1, entry.getKey());
+                                } else if((System.currentTimeMillis()-Long.parseLong(String.valueOf(entry.getValue()))>3600000)){
+                                    xoapointapplistapp2(-1,entry.getKey());
                                     addDevice(entry.getKey(), "break");
                                 }
 
-                            } else {
-                                if (String.valueOf(entry.getValue()).equals("finished")) {
+                            }else {
+                                if(String.valueOf(entry.getValue()).equals("finished")){
 
-                                } else if (String.valueOf(entry.getValue()).equals("break")) {
+                                }else if (String.valueOf(entry.getValue()).equals("break")) {
 
-                                } else {
-                                    addDevice(entry.getKey(), "finished");
+                                }else {
+                                    addDevice(entry.getKey(),"finished");
                                     addPoint(1);
-                                    addHistory(0, entry.getKey());
+                                    addHistory(0,entry.getKey());
                                 }
                             }
 
                         }
-                    } else {
+                    }else {
 //                        addDevice(packagename,"finished");
 //                        addPoint(1);
 //                        addHistory(0,packagename);
@@ -511,12 +521,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private Task<String> addDevice(String packagename, String time) {
+    private Task<String> addDevice(String packagename,String time) {
         // Create the arguments to the callable function.
-        Map<String, Object> data = new HashMap<>();
-        data.put("device", getDeviceId());
-        data.put("packagename", packagename);
-        data.put("time", time);
+        Map<String,Object> data = new HashMap<>();
+        data.put("device",getDeviceId());
+        data.put("packagename",packagename);
+        data.put("time",time);
         return mFunctions
                 .getHttpsCallable("addDevice")
                 .call(data)
@@ -527,7 +537,7 @@ public class LoginActivity extends AppCompatActivity {
                         // has failed then getResult() will throw an Exception which will be
                         // propagated down.
                         String result = (String) task.getResult().getData();
-                        Log.d("teststring", result);
+                        Log.d("teststring",result );
                         return result;
                     }
                 });
@@ -574,25 +584,24 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    private Task<String> removePointV2(int diemadduser, String listappPackagename, String listappPoint, String listappLinkanh, String listappTenapp
-            , String listappTennhaphattrien, String adminpoint, String admindouutien, String admintime, String adminuserid) {
+    private Task<String> removePointV2(int diemadduser,String listappPackagename,String listappPoint,String listappLinkanh,String listappTenapp
+            ,String listappTennhaphattrien,String adminpoint,String admindouutien,String admintime,String adminuserid) {
         // Create the arguments to the callable function.
-        Map<String, Object> data = new HashMap<>();
-        data.put("diemadduser", diemadduser);
-        data.put("listappPackagename", listappPackagename);
-        data.put("listappPoint", listappPoint);
-        data.put("listappLinkanh", listappLinkanh);
-        data.put("listappTenapp", listappTenapp);
-        data.put("listappTennhaphattrien", listappTennhaphattrien);
-        data.put("adminpackage", listappPackagename);
-        data.put("adminpoint", adminpoint);
-        data.put("adminlinkanh", listappLinkanh);
-        data.put("admintenapp", listappTenapp);
-        data.put("admintennhaphattrien", listappTennhaphattrien);
-        data.put("admindouutien", admindouutien);
-        data.put("admintime", admintime);
-        data.put("adminuserid", adminuserid);
+        Map<String,Object> data = new HashMap<>();
+        data.put("diemadduser",diemadduser);
+        data.put("listappPackagename",listappPackagename);
+        data.put("listappPoint",listappPoint);
+        data.put("listappLinkanh",listappLinkanh);
+        data.put("listappTenapp",listappTenapp);
+        data.put("listappTennhaphattrien",listappTennhaphattrien);
+        data.put("adminpackage",listappPackagename);
+        data.put("adminpoint",adminpoint);
+        data.put("adminlinkanh",listappLinkanh);
+        data.put("admintenapp",listappTenapp);
+        data.put("admintennhaphattrien",listappTennhaphattrien);
+        data.put("admindouutien",admindouutien);
+        data.put("admintime",admintime);
+        data.put("adminuserid",adminuserid);
         return mFunctions
                 .getHttpsCallable("userclickapp")
                 .call(data)
@@ -603,7 +612,7 @@ public class LoginActivity extends AppCompatActivity {
                         // has failed then getResult() will throw an Exception which will be
                         // propagated down.
                         String result = (String) task.getResult().getData();
-                        Log.d("teststring", result);
+                        Log.d("teststring",result );
                         return result;
                     }
                 });
@@ -626,7 +635,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                    appItem.setPackageName(entryNested.getKey());
                                                                    Map<String, String> allData = (Map<String, String>) entryNested.getValue();
 //                                                                   addApplication(packagename, String.valueOf(Integer.parseInt(allData.get("points")) - point), allData.get("linkanh"), allData.get("tenapp"), allData.get("tennhaphattrien"));
-                                                                   removePointV2(point, packagename, String.valueOf(Integer.parseInt(allData.get("points")) - point), listappLinkanh, listappTenapp, listappTennhaphattrien, adminpoint, admindouutien, admintime, userid);
+                                                                    removePointV2(point,packagename,String.valueOf(Integer.parseInt(allData.get("points")) - point),listappLinkanh,listappTenapp,listappTennhaphattrien,adminpoint,admindouutien,admintime,userid);
                                                                }
                                                            }
                                                        }
@@ -645,7 +654,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                         LoginManager.getInstance().logOut();
                     }
                 })
@@ -657,7 +666,7 @@ public class LoginActivity extends AppCompatActivity {
 //                                                   addListAdmin(packagename, String.valueOf(Long.parseLong(String.valueOf(task.getResult().get("points"))) - point), String.valueOf(task.getResult().get("linkanh")), String.valueOf(task.getResult().get("tenapp")), String.valueOf(task.getResult().get("tennhaphattrien")), String.valueOf(task.getResult().get("douutien")), String.valueOf(task.getResult().get("time")), String.valueOf(task.getResult().get("userid")));
 //                            addH
 //                            addHistory(packagename + "/" + documentSnapshot.get("tenapp") + "/" + documentSnapshot.get("tennhaphattrien") + "/" + documentSnapshot.get("time"));
-                            xoapointappuser2(point, packagename, String.valueOf(documentSnapshot.get("userid")), String.valueOf(documentSnapshot.get("linkanh")), String.valueOf(documentSnapshot.get("tenapp")), String.valueOf(documentSnapshot.get("tennhaphattrien")), String.valueOf(Long.parseLong(String.valueOf(documentSnapshot.get("points"))) - point), String.valueOf(documentSnapshot.get("douutien")), String.valueOf(documentSnapshot.get("time")));
+                            xoapointappuser2(point, packagename, String.valueOf(documentSnapshot.get("userid")), String.valueOf(documentSnapshot.get("linkanh")),String.valueOf(documentSnapshot.get("tenapp")),String.valueOf(documentSnapshot.get("tennhaphattrien")),String.valueOf(Long.parseLong(String.valueOf(documentSnapshot.get("points"))) - point), String.valueOf(documentSnapshot.get("douutien")), String.valueOf(documentSnapshot.get("time")));
                         }
                     }
                 });
@@ -690,7 +699,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private Task<String> setDouutien(String packagename, String douutien) {  // Create the arguments to the callable function.
+    private Task<String> setDouutien(String packagename,String douutien){  // Create the arguments to the callable function.
         Map<String, Object> data = new HashMap<>();
         data.put("packagename", packagename);
         data.put("douutien", douutien);
@@ -710,8 +719,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    private Task<String> setEnable(String userid) {  // Create the arguments to the callable function.
+    private Task<String> setEnable(String userid){  // Create the arguments to the callable function.
         Map<String, Object> data = new HashMap<>();
         data.put("userid", userid);
 
@@ -730,8 +738,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    private Task<String> setDisable(String userid) {  // Create the arguments to the callable function.
+    private Task<String> setDisable(String userid){  // Create the arguments to the callable function.
         Map<String, Object> data = new HashMap<>();
         data.put("userid", userid);
 
@@ -752,6 +759,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+
     private void AppInstalled(final FirebaseAuth mAuth, final FirebaseFirestore db, final String packagename) {
 
         DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
@@ -761,19 +769,19 @@ public class LoginActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        if (task.getResult().getData().containsKey(packagename)) {
+                        if(task.getResult().getData().containsKey(packagename)){
                             for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                if (entry.getKey().equals(packagename)) {
-                                    if (String.valueOf(entry.getValue()).equals("finished")) {
-                                        xoapointapplistapp2(-1, packagename);
-                                    } else {
-                                        if (String.valueOf(entry.getValue()).equals("break")) {
+                                if(entry.getKey().equals(packagename)){
+                                    if(String.valueOf(entry.getValue()).equals("finished")){
+                                        xoapointapplistapp2(-1,packagename);
+                                    }else {
+                                        if(String.valueOf(entry.getValue()).equals("break")){
 
 //                                    xoapointapplistapp2(1,packagename);
-                                        } else {
-                                            addDevice(packagename, "finished");
+                                        }else {
+                                            addDevice(packagename,"finished");
                                             addPoint(1);
-                                            addHistory(0, packagename);
+                                            addHistory(0,packagename);
                                         }
                                     }
                                 }
@@ -782,7 +790,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 } else {
-                    Toast.makeText(LoginActivity.this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
 //                    Log.d(TAG, "get failed with ", task.getException());
                     LoginManager.getInstance().logOut();
                 }
@@ -841,7 +849,7 @@ public class LoginActivity extends AppCompatActivity {
 //            }
 //        });
 
-    //        db.collection("DEVICES").document(getDeviceId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//        db.collection("DEVICES").document(getDeviceId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
 //            @Override
 //            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 //                if(task.getResult().exists()) {
@@ -863,21 +871,21 @@ public class LoginActivity extends AppCompatActivity {
 //            }
 //        });
 //    }
-    private void addHistory(final int point, final String packagename) {
-        db.collection("LISTAPP").document(packagename)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                           @Override
-                                           public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                               if (task.isSuccessful()) {
-                                                   if (task.getResult().exists()) {
-                                                       addHistory(packagename + "<ict>" + task.getResult().get("tenapp") + "<ict>" + task.getResult().get("tennhaphattrien") + "<ict>" + System.currentTimeMillis() + "<ict>" + task.getResult().get("linkanh"));
-                                                   }
+private void addHistory(final int point, final String packagename) {
+    db.collection("LISTAPP").document(packagename)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                       @Override
+                                       public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                           if(task.isSuccessful()){
+                                               if (task.getResult().exists()) {
+                                                   addHistory(packagename + "<ict>" + task.getResult().get("tenapp") + "<ict>" + task.getResult().get("tennhaphattrien") + "<ict>" + System.currentTimeMillis()+"<ict>"+task.getResult().get("linkanh"));
                                                }
                                            }
                                        }
-                );
-    }
+                                   }
+            );
+}
 
     private Task<String> addHistory(String packagename) {
         // Create the arguments to the callable function.

@@ -102,16 +102,14 @@ public class FindAppActivity extends AppCompatActivity {
         mFunctions = FirebaseFunctions.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-        if(CONST.KEY_NAME==null || CONST.KEY_DEVELOPER==null || CONST.KEY_IMAGE==null)
-        {
+        if (CONST.KEY_NAME == null || CONST.KEY_DEVELOPER == null || CONST.KEY_IMAGE == null) {
             GetKeyCHPlay();
         }
         InitView();
         InitAction();
     }
 
-    private void GetKeyCHPlay()
-    {
+    private void GetKeyCHPlay() {
         db.collection("KEY").document("KEY").addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
@@ -123,16 +121,16 @@ public class FindAppActivity extends AppCompatActivity {
 
                     if (snapshot != null && snapshot.exists()) {
                         for (Map.Entry<String, Object> entry : snapshot.getData().entrySet()) {
-                            if(entry.getKey().equals("KeyName"))
+                            if (entry.getKey().equals("KeyName"))
                                 CONST.KEY_NAME = entry.getValue().toString();
-                            else if(entry.getKey().equals("KeyImage"))
+                            else if (entry.getKey().equals("KeyImage"))
                                 CONST.KEY_IMAGE = entry.getValue().toString();
-                            else if(entry.getKey().equals("KeyDeveloper"))
+                            else if (entry.getKey().equals("KeyDeveloper"))
                                 CONST.KEY_DEVELOPER = entry.getValue().toString();
                         }
-                        Log.d("KEYYYYY_NAME",CONST.KEY_NAME);
-                        Log.d("KEYYYYY_IMAGE",CONST.KEY_IMAGE);
-                        Log.d("KEYYYYY_DEVELOPER",CONST.KEY_DEVELOPER);
+                        Log.d("KEYYYYY_NAME", CONST.KEY_NAME);
+                        Log.d("KEYYYYY_IMAGE", CONST.KEY_IMAGE);
+                        Log.d("KEYYYYY_DEVELOPER", CONST.KEY_DEVELOPER);
 
                     } else {
                         Log.d("DATAAA", "NULL");
@@ -144,8 +142,7 @@ public class FindAppActivity extends AppCompatActivity {
         });
     }
 
-    private void InitView()
-    {
+    private void InitView() {
         edInput = findViewById(R.id.edInputPackage);
         ivAvatarApp = findViewById(R.id.iv_avatarApp);
         tvNameApp = findViewById(R.id.tv_nameApp);
@@ -157,6 +154,7 @@ public class FindAppActivity extends AppCompatActivity {
         ivBack = findViewById(R.id.iv_back);
         tvStatusGetInfo = findViewById(R.id.tv_statusGetInfo);
     }
+
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -167,8 +165,8 @@ public class FindAppActivity extends AppCompatActivity {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-    private void InitAction()
-    {
+
+    private void InitAction() {
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -217,20 +215,22 @@ public class FindAppActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
-                            if(task.getResult().exists()){
+                            if (task.getResult().exists()) {
 
                                 sLoading.dismiss();
-                                Toast.makeText(FindAppActivity.this, "This package name already exists", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FindAppActivity.this, R.string.packagenamealreadyexists, Toast.LENGTH_SHORT).show();
                                 btFind.setEnabled(true);
-                            }else {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                addApplication(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3));
-                                addListAdmin(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3), "1", String.valueOf(System.currentTimeMillis()), mAuth.getUid(),true);
                             } else {
-                                addApplication(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3));
-                                addListAdmin(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3), "1", String.valueOf(System.currentTimeMillis()), mAuth.getUid(),true);
-                            }}    } else {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    addApplication(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3));
+                                    addListAdmin(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3), "1", String.valueOf(System.currentTimeMillis()), mAuth.getUid(), true);
+                                } else {
+                                    addApplication(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3));
+                                    addListAdmin(listGetInfoApp.get(4), "0", listGetInfoApp.get(1), listGetInfoApp.get(2), listGetInfoApp.get(3), "1", String.valueOf(System.currentTimeMillis()), mAuth.getUid(), true);
+                                }
+                            }
+                        } else {
 
                         }
                     }
@@ -238,6 +238,7 @@ public class FindAppActivity extends AppCompatActivity {
             }
         });
     }
+
     private class GetInfoApp extends AsyncTask<String, Void, List<String>> {
         List<String> listInfoApp = new ArrayList<>();
 
@@ -279,21 +280,17 @@ public class FindAppActivity extends AppCompatActivity {
                 Glide.with(FindAppActivity.this).load(listInfoApp.get(1)).into(ivAvatarApp);
                 tvNameApp.setText(listInfoApp.get(2));
                 tvDeveloper.setText(listInfoApp.get(3));
-            }
-            else if(listInfoApp.size()==1)
-            {
+            } else if (listInfoApp.size() == 1) {
                 avLoading.hide();
                 avLoading.setVisibility(View.GONE);
                 tvStatusGetInfo.setVisibility(View.VISIBLE);
-                tvStatusGetInfo.setText("Package name doesn't exist on CH Play");
+                tvStatusGetInfo.setText(R.string.PackagenamedoesntexistonCHPlay);
                 btFind.setEnabled(true);
-            }
-            else
-            {
+            } else {
                 avLoading.hide();
                 avLoading.setVisibility(View.GONE);
                 tvStatusGetInfo.setVisibility(View.VISIBLE);
-                tvStatusGetInfo.setText("Get data is failed. Please try again");
+                tvStatusGetInfo.setText(R.string.GetdataisfailedPleasetryagain);
                 btFind.setEnabled(true);
             }
         }
@@ -325,8 +322,7 @@ public class FindAppActivity extends AppCompatActivity {
     }
 
     private Task<String> addListAdmin(String packagename, String points, String linkanh, String tenapp, String tennhaphattrien, String douutien, String time, String userid, boolean check) {
-        if(check)
-        {
+        if (check) {
             onBackPressed();
         }
         // Create the arguments to the callable function.
