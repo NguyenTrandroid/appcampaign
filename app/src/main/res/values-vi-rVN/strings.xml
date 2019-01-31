@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">AppCampaign</string>
+    <string name="facebook_app_id">412504279295436</string>
+    <string name="fb_login_protocol_scheme">fb412504279295436</string>
+    <!--<string name="app_name">AppCampaign</string>-->
     <string name="dangnhap">Đăng nhập qua FACEBOOK</string>
     <string name="chiendich">Chiến dịch</string>
     <string name="appcuatoi">Apps của tôi</string>
