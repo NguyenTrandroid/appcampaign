@@ -169,7 +169,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-                emailIntent.setData(Uri.parse("mailto:nguyenmap2308@gmail.com"));
+                emailIntent.setData(Uri.parse("mailto:huynhquachphi12@gmail.com"));
                 startActivity(Intent.createChooser(emailIntent, "Send feedback"));
             }
         });

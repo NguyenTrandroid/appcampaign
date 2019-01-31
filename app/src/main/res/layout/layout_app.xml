@@ -1,67 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rela"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:id="@+id/rela"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
 
     <android.support.v7.widget.CardView
-        android:layout_marginBottom="@dimen/_5sdp"
-        android:layout_marginRight="@dimen/_18sdp"
-        android:layout_marginLeft="@dimen/_18sdp"
         android:id="@+id/cv_app"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="@dimen/_10sdp"
+        android:layout_marginLeft="@dimen/_18sdp"
+        android:layout_marginRight="@dimen/_18sdp"
+        android:layout_marginBottom="@dimen/_7sdp"
         app:cardBackgroundColor="@color/white"
-        app:cardElevation="@dimen/_5sdp">
+        app:cardCornerRadius="@dimen/_5sdp"
+        app:cardElevation="@dimen/_2sdp">
+
         <RelativeLayout
-            android:layout_margin="@dimen/_8sdp"
+            android:padding="@dimen/_4sdp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="@dimen/_60sdp"
+            android:layout_margin="@dimen/_5sdp">
+
             <ImageView
                 android:id="@+id/iv_avatarApp"
-                android:src="@drawable/unnamed"
-                android:layout_width="@dimen/_50sdp"
-                android:layout_height="@dimen/_50sdp" />
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:src="@drawable/unnamed" />
 
             <RelativeLayout
                 android:id="@+id/rl_infoApp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/iv_avatarApp"
-                android:layout_marginLeft="@dimen/_10sdp">
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_toRightOf="@id/iv_avatarApp">
+
                 <TextView
+                    android:singleLine="true"
                     android:id="@+id/tv_nameApp"
-                    android:textColor="@color/blue"
-                    android:fontFamily="@font/avant_garde"
-                    android:textSize="@dimen/_14ssp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Birthday Photo Frame"/>
+                    android:fontFamily="@font/avant_garde"
+                    android:text="Birthday Photo Frame"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/_12ssp" />
+
                 <TextView
-                    android:layout_below="@id/tv_nameApp"
+                    android:singleLine="true"
                     android:id="@+id/tv_developerApp"
                     android:layout_width="wrap_content"
-                    android:textColor="@color/dim"
-                    android:fontFamily="@font/avant_garde"
-                    android:textSize="@dimen/_8ssp"
                     android:layout_height="wrap_content"
-                    android:text="ProToolStudio"/>
+                    android:layout_below="@id/tv_nameApp"
+                    android:fontFamily="@font/avant_garde"
+                    android:text="ProToolStudio"
+                    android:textColor="@color/dim"
+                    android:textSize="@dimen/_7ssp" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/iv_avatarApp"
                 android:layout_below="@id/rl_infoApp"
-                android:layout_marginLeft="@dimen/_5sdp">
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_toRightOf="@id/iv_avatarApp">
+
                 <ImageView
-                    android:layout_marginTop="@dimen/_8sdp"
                     android:id="@+id/iv_thunder"
-                    android:layout_width="@dimen/_15sdp"
-                    android:layout_height="@dimen/_15sdp"
-                    android:src="@drawable/ic_thunder_blue"/>
+                    android:layout_width="@dimen/_11sdp"
+                    android:layout_height="@dimen/_11sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:src="@drawable/ic_thunder_blue" />
 
                 <TextView
                     android:id="@+id/tv_pointApp"
@@ -72,28 +83,30 @@
                     android:fontFamily="@font/nahia"
                     android:text="_ _"
                     android:textColor="@color/blue"
-                    android:textSize="@dimen/_20ssp" />
+                    android:textSize="@dimen/_16ssp" />
             </RelativeLayout>
+
             <ImageView
                 android:id="@+id/iv_down"
-                android:layout_marginRight="@dimen/_5sdp"
-                android:layout_below="@id/rl_infoApp"
-                android:layout_marginTop="@dimen/_8sdp"
-                android:layout_alignParentRight="true"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
+                android:layout_below="@id/rl_infoApp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginRight="@dimen/_5sdp"
                 android:src="@drawable/ic_download"
-                android:visibility="visible"/>
+                android:visibility="visible" />
+
             <ImageView
                 android:id="@+id/iv_remove"
-                android:layout_marginRight="@dimen/_5sdp"
-                android:layout_below="@id/rl_infoApp"
-                android:layout_marginTop="@dimen/_8sdp"
-                android:layout_alignParentRight="true"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
+                android:layout_below="@id/rl_infoApp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginRight="@dimen/_5sdp"
                 android:src="@drawable/ic_close"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/iv_edit"
@@ -105,16 +118,17 @@
                 android:layout_toLeftOf="@id/iv_remove"
                 android:src="@drawable/ic_info"
                 android:visibility="invisible" />
+
             <ImageView
                 android:id="@+id/iv_campaign"
-                android:layout_marginRight="@dimen/_5sdp"
-                android:layout_below="@id/rl_infoApp"
-                android:layout_marginTop="@dimen/_8sdp"
-                android:layout_alignParentRight="true"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
+                android:layout_below="@id/rl_infoApp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginRight="@dimen/_5sdp"
                 android:src="@drawable/ic_campaign"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 
