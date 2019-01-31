@@ -44,6 +44,7 @@ public void onReceive(Context context, Intent intent) {
             if (mAuth.getUid() != null) {
                 final String packageName = intent.getData().getEncodedSchemeSpecificPart();
                 final AppsManager appsManager = new AppsManager(context);
+                final ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
                 DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
                 docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -52,7 +53,6 @@ public void onReceive(Context context, Intent intent) {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
                                 for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                    ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
                                     Boolean have = false;
                                     for (int i = 0; i < applist.size(); i++) {
                                         if (

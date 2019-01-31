@@ -89,10 +89,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         mFunctions = FirebaseFunctions.getInstance();
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
         s = new SLoading(this);
 //        uniqueDevice = new UniqueDevice(this);
 //        uniqueDevice.getAndroidId();
@@ -312,7 +312,15 @@ public class LoginActivity extends AppCompatActivity {
             public void onAnimationStart(Animation animation) {
                 ivSplash.setVisibility(View.VISIBLE);
                 if (isLoggedIn()) {
-                    kiemtra();
+                    Thread thread = new Thread() {
+                        @Override
+                        public void run() {
+                            kiemtra();
+                        }
+                    };
+
+                    thread.start();
+//                    kiemtra();
 //                    kiemtrataikhoan();
                 }
 
@@ -402,7 +410,15 @@ public class LoginActivity extends AppCompatActivity {
                             // muốn lấy thông tin gì là trong get trong này ra nha
                             FirebaseUser user = auth.getCurrentUser();
                             kiemtrakhoitao();
-                            kiemtra();
+                            Thread thread = new Thread() {
+                                @Override
+                                public void run() {
+                                    kiemtra();
+                                }
+                            };
+
+                            thread.start();
+//                            kiemtra();
 
 
                         } else {
@@ -448,6 +464,7 @@ public class LoginActivity extends AppCompatActivity {
 //        editor.apply();
         ////////
         final AppsManager appsManager = new AppsManager(this);
+        final ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
         DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -456,7 +473,6 @@ public class LoginActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                            ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
                             Boolean have = false;
                             for (int i = 0; i < applist.size(); i++) {
                                 if (

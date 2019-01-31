@@ -1,6 +1,7 @@
 package android.ict.appcampaign.Campaign;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import android.ict.appcampaign.Login.LoginActivity;
 import android.ict.appcampaign.R;
 import android.ict.appcampaign.utils.AppsManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Parcelable;
 import android.provider.Settings;
@@ -456,44 +458,23 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
 
     }
     private void kiemtra(){
-//        SharedPreferences prefs = getSharedPreferences("nhat", MODE_PRIVATE);
-//        final String packagename = prefs.getString("packagename", "null");
-        ///////
-        ////////
-//        boolean have=false;
-//        for (int i = 0; i < applist.size(); i++) {
-//            if (applist.get(i).getAppPackage().equals(packagename)) {
-//                /**
-//                 * Đã cài thành công
-//                 */
-//                Log.d("testokeokee", packagename);
-//                AppInstalled(mAuth, db, packagename);
-//                have=true;
-//            }
-//        }
-//        if(have==false){
-//        SharedPreferences prefs = getSharedPreferences("nhat", MODE_PRIVATE);
-//        final String packagename = prefs.getString("packagename", "null");
-//        ///////
-//        SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
-//        editor.putString("packagename", "null");
-//        editor.apply();
-        ////////
         final AppsManager appsManager = new AppsManager(this);
-            DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
+        final ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
+        DocumentReference docRef = db.collection("DEVICES").document(getDeviceId());
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
+                                Boolean haves=false;
                                 for (Map.Entry<String, Object> entry : task.getResult().getData().entrySet()) {
-                                    ArrayList<AppsManager.AppInfo> applist = appsManager.getApps();
                                     Boolean have =false;
                                     for (int i = 0; i <applist.size() ; i++) {
                                         if(
                                                 applist.get(i).getAppPackage().equals(entry.getKey())){
                                             have=true;
+                                            haves=true;
                                         }
                                     }
                                     if(!have){
@@ -509,8 +490,10 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
 
                                     }else {
                                         if(String.valueOf(entry.getValue()).equals("finished")){
+                                            haves=false;
 
                                         }else if (String.valueOf(entry.getValue()).equals("break")) {
+                                            haves=false;
 
                                         }else {
                                             if(!onRecei) {
@@ -523,17 +506,20 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                                     }
 
                                 }
+                                if(!haves){
+                                    s.dismiss();
+                                }
+
                         }else {
+
+                            s.dismiss();
 //                            addDevice(packagename,"finished");
 //                            addPoint(1);
 //                            addHistory(0,packagename);
                         }
                     }
-                    s.dismiss();
-                    s2.dismiss();
                 }
             });
-
 //        SharedPreferences.Editor editor = getSharedPreferences("nhat", MODE_PRIVATE).edit();
 //        editor.putString("packagename", "null");
 //        editor.apply();
@@ -700,6 +686,17 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                     }
                 });
     }
+    @Override
+    public void onPause() {
+        mRewardedVideoAd.pause(this);
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        mRewardedVideoAd.destroy(this);
+        super.onDestroy();
+    }
 
 
     @Override
@@ -708,18 +705,14 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
         if(intentch&&!isrs) {
             Log.d("tesssss","rs");
             intentch=false;
-            if(isshow=false){
             s.show();
-            isshow=true;
-            }
             Thread thread = new Thread() {
                 @Override
                 public void run() {
                     kiemtra();
                 }
             };
-
-            thread.start();
+            thread.run();
         }
     }
 

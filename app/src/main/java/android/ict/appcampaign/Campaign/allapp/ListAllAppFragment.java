@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.ict.appcampaign.AppItem;
 import android.ict.appcampaign.CONST;
+import android.ict.appcampaign.Campaign.CampaignActivity;
 import android.ict.appcampaign.Campaign.ItemApp;
 import android.ict.appcampaign.Campaign.ListCampaignAdapter;
 import android.ict.appcampaign.Campaign.interfacee.GetKeySearch;
@@ -82,7 +83,7 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
         reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                try { 
+                try {
                     if (e != null) {
                         Log.w("AAA", "Listen failed.", e);
                         return;
@@ -198,8 +199,8 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
 //                                }
 //                        }
                         check();
-                        listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser, myapp);
-                        recyclerView.setAdapter(listCampaignAdapter);
+
+
                     }
                 } catch (Exception s) {
 
@@ -270,6 +271,9 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
                         }
                     }
                 }
+                CampaignActivity.s2.dismiss();
+                CampaignActivity.s.dismiss();
+
                 listCampaignAdapter = new ListCampaignAdapter(getContext(), appArrayListAllApp, pointUser, myapp);
                 recyclerView.setAdapter(listCampaignAdapter);
             }
