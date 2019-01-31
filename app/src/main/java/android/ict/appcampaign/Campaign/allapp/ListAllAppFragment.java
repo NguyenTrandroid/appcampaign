@@ -198,7 +198,7 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
 //                                    appArrayListAllApp.add(0, itemAppx);
 //                                }
 //                        }
-                        check();
+                        hideapp();
 
 
                     }
@@ -247,6 +247,23 @@ public class ListAllAppFragment extends Fragment implements GetKeySearch {
             listCampaignAdapter.notifyDataSetChanged();
             recyclerView.setAdapter(listCampaignAdapter);
         }
+    }
+    private void hideapp() {
+        DocumentReference reference = db.collection("USER").document(uid);
+        reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                try {
+
+                    check();
+
+                } catch (Exception s) {
+
+                }
+            }
+        });
+
+
     }
 
     private void check() {

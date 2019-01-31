@@ -131,6 +131,7 @@ public class CampaignActivity extends AppCompatActivity implements ListCampaignA
                             ? "Local" : "Server";
                     if (documentSnapshot != null && documentSnapshot.exists()) {
                         Log.d("AAA", documentSnapshot.get("points") + "");
+
                         tvPointUser.setText(documentSnapshot.get("points").toString());
                     } else {
                         Log.d("AAA", source + " data: null");
