@@ -379,7 +379,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onError(FacebookException error) {
                 Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
                 cvLogin.setVisibility(View.VISIBLE);
-
             }
         });
         auth = FirebaseAuth.getInstance();
@@ -421,7 +420,7 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = auth.getCurrentUser();
                             kiemtrakhoitao();
                             kiemtra();
-                            ;
+
 
 
 
@@ -651,7 +650,6 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
-                        LoginManager.getInstance().logOut();
                     }
                 })
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -788,7 +786,6 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(LoginActivity.this, R.string.Checkyourinternetconnection, Toast.LENGTH_SHORT).show();
 //                    Log.d(TAG, "get failed with ", task.getException());
-                    LoginManager.getInstance().logOut();
                 }
             }
         });
